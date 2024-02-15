@@ -1,0 +1,72 @@
+<div mat-dialog-title>
+  <h1>{{data ? 'Editar': 'Agregar'}} Cliente</h1>
+</div>
+<form [formGroup]="clientForm" (ngSubmit)="onFormSubmit()">
+  <div class="content">
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>ID Cliente</mat-label>
+          <input matInput formControlName="idCliente" type="text" placeholder="ID del Cliente">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" type="text" placeholder="Nombre del Cliente">
+        </mat-form-field>
+      </div>
+
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido" type="text" placeholder="Apellido del Cliente">
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" type="tel" placeholder="Teléfono del Cliente" maxlength="10">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Líder</mat-label>
+          <mat-select formControlName="lider">
+            <mat-option *ngFor="let lider of lideres" [value]="lider.id">
+              {{lider.nombre }} {{lider.apellido}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de Pago</mat-label>
+          <input matInput formControlName="fechaInicio" [matDatepicker]="picker" [max]="maxDate">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+  </div>
+  <div class="content mb-4">
+    <div class="d-flex justify-content-center">
+      <button [disabled]="!clientForm.valid" class="btn btn-outline-light" type="submit">{{data ? 'Actualizar':
+        'Guardar'}}
+      </button>
+      <button class="buton btn  btn-danger" type="button" [mat-dialog-close]="false">Cancelar
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,35 @@
+<div class="wrapper">
+    <aside id="sidebar">
+        <div class="d-flex">
+            <button class="toggle-btn" type="button" (click)="toggleSidebar()">
+                <i class="lni lni-grid-alt"></i>
+            </button>
+            <div class="sidebar-logo">
+                <a routerLink="/dashboard">Skyteam Valle</a>
+            </div>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-item">
+                <a routerLink="/dashboard/clientes" class="sidebar-link">
+                    <i class="lni lni-users"></i>
+                    <span>Clientes</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a routerLink="/dashboard/patrocinadores" class="sidebar-link">
+                    <i class="lni lni-sketch"></i>
+                    <span>Patrocinadores</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a (click)="logOut()" class="sidebar-link">
+                <i class="lni lni-exit"></i>
+                <span>Salir</span>
+            </a>
+        </div>
+    </aside>
+    <div class="main">
+        <router-outlet></router-outlet>
+    </div>
+</div>

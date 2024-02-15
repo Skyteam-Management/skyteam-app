@@ -1,1 +1,116 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --blanco: #ffffff;
+  --negro: #150e16;
+  --morado: #4B0C5D;
+  --azul: #1D2B72;
+  --azulOscuro: #131C49;
+  --gris: #737CA8;
+  --sombra: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+html,
+body {
+  height: 100vh;
+  color: var(--blanco);
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  background-color: var(--azul);
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.bg-negro {
+  background-color: var(--negro) !important;
+}
+
+.centrar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.titulo {
+  font-size: 3em;
+}
+
+.contenedor {
+  margin: 3em 3em 3em 3em;
+}
+
+.contenedor-adm {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+
+  .setting {
+    display: flex;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+/* TABLA */
+
+.mat-mdc-table {
+  background-color: var(--azulOscuro) !important;
+}
+
+.mat-mdc-paginator {
+  background-color: var(--azulOscuro) !important;
+}
+td, th {
+  width: max-content;
+}
+
+table td {
+  text-transform: capitalize !important;
+}
+
+
+table {
+  width: 100%;
+}
+
+@media screen and (max-width: 800px) {
+  .mat-elevation-z8 {
+    overflow-x: auto;
+  }
+}
+
+mat-paginator {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/* SWAL */
+
+.confirm-button-class {
+  background-color: var(--morado) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.texto-blanco {
+  color: var(--blanco) !important;
+}
+
+/* DIALOG */
+
+.custom-dialog-container {
+  background-color: var(--azulOscuro) !important;
+}
