@@ -57,11 +57,13 @@ span:hover {
     align-items: center;
     gap: 3em;
 
-    form {
-      width: 100%;
-    }    
+   
   }
 
+  form {
+    width: 100%;
+  }    
+  
   .img {
     margin-bottom: 0;
   }

@@ -1,1 +1,10 @@
-{}
+{
+  "hosting": {
+    "public": "dist/skyteam_app",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

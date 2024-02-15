@@ -51,15 +51,19 @@ mat-form-field {
   display: flex;
   flex-direction: column;
 
-  .setting {
-    display: flex;
+ 
 
-    button {
-      width: 100%;
-    }
-  }
+ 
 }
 
+
+.setting {
+  display: flex;
+}
+
+button {
+  width: 100%;
+}
 /* TABLA */
 
 .mat-mdc-table {
