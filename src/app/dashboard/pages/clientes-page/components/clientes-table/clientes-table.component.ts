@@ -21,7 +21,7 @@ export class ClientesTableComponent implements OnInit {
   clientList: Client[] = [];
   lideresList: Lider[] = [];
 
-  displayedColumns: string[] = ['idCliente', 'nombre', 'apellido', 'telefono', 'lider', 'fechaInicio', 'estado', 'actions'];
+  displayedColumns: string[] = ['idCliente', 'nombre', 'apellido', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'estado', 'actions'];
   dataSource: MatTableDataSource<Client> = new MatTableDataSource();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -37,26 +37,25 @@ export class ClientesTableComponent implements OnInit {
   }
 
   isExpired(fechaInicio: string): boolean {
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    return new Date(fechaInicio) < oneMonthAgo;
+    const twentyEightDaysAgo = new Date();
+    twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 28);
+    return new Date(fechaInicio) < twentyEightDaysAgo;
   }
+  
   getClientes(): void {
     this._clientService.getClients()
       .subscribe((res: Client[]) => {
         this.clientList = res.map(client => {
           return {
             ...client,
-            // Convertir el timestamp de fechaInicio a una fecha
             fechaInicio: client.fechaInicio ? (typeof client.fechaInicio === 'string' ? client.fechaInicio : new Date((client.fechaInicio as any).seconds * 1000).toString()) : null,
-            // Añadir el nombre del líder al objeto del cliente
             liderNombre: this.getLiderName(client.lider)
           };
         });
         this.dataSource = new MatTableDataSource(this.clientList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-  
+
         // Sobrescribir el método filterPredicate
         this.dataSource.filterPredicate = (data: Client, filter: string) => {
           // Convertir el objeto de datos a una cadena de texto
@@ -65,6 +64,7 @@ export class ClientesTableComponent implements OnInit {
         };
       });
   }
+
   getLideres(): void {
     this._liderService.getLideres()
       .subscribe((res: Lider[]) => {
@@ -79,6 +79,12 @@ export class ClientesTableComponent implements OnInit {
       }
     }
     return 'no hay nombre';
+  }
+
+  add28Days(fechaInicio: string): string {
+    const date = new Date(fechaInicio);
+    date.setDate(date.getDate() + 28);
+    return date.toISOString().split('T')[0];
   }
 
   openAddEditForm() {
