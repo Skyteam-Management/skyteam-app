@@ -5,6 +5,11 @@ import { LoginGuard } from './auth/guards/login.guard';
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'auth',
+    pathMatch: 'full'
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
     canActivate: [LoginGuard]
@@ -17,7 +22,8 @@ const routes: Routes = [
   { path: 'module/auth/modules/material', loadChildren: () => import('./auth/modules/material/material.module').then(m => m.MaterialModule) },
   {
     path: '**',
-    redirectTo: 'auth'
+    redirectTo: 'auth',
+    pathMatch: 'full'
   }
 ];
 
