@@ -19,11 +19,6 @@
         <td mat-cell *matCellDef="let row"> {{row.nombre}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="apellido">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido </th>
-        <td mat-cell *matCellDef="let row"> {{row.apellido}} </td>
-      </ng-container>
-
       <ng-container matColumnDef="telefono">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Teléfono </th>
         <td mat-cell *matCellDef="let row"> {{row.telefono}} </td>
@@ -41,7 +36,12 @@
 
       <ng-container matColumnDef="fechaVencimiento">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de Vencimiento </th>
-        <td mat-cell *matCellDef="let row"> {{add28Days(row.fechaInicio) | date: 'MMM d, y'}} </td>
+        <td mat-cell *matCellDef="let row"> {{calculateFechaVencimiento(row.fechaInicio, row.paquete) | date: 'MMM d, y'}} </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="paquete">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Paquete </th>
+        <td mat-cell *matCellDef="let row"> {{getPaqueteName(row.paquete)}} </td>
       </ng-container>
 
       <ng-container matColumnDef="estado">

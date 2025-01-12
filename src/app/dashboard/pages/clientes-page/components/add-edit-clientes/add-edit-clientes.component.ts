@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
+import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
 import { Client } from 'src/app/interfaces/client.interface';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import Swal from 'sweetalert2';
@@ -17,7 +18,9 @@ export class AddEditClientComponent implements OnInit {
   maxDate = new Date();
 
   lideres: Lider[] = []
- 
+  
+  paquetes = PAQUETES;
+
   constructor(
     private fb: FormBuilder,
     private clientService: ClientService,
@@ -28,9 +31,9 @@ export class AddEditClientComponent implements OnInit {
     this.clientForm = this.fb.group({
       idCliente: ['', Validators.required],
       nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
       telefono: ['', Validators.required],
       lider: ['', Validators.required],
+      paquete: ['', Validators.required],
       fechaInicio: [new Date(), Validators.required] // Initialize with current date
     });
 

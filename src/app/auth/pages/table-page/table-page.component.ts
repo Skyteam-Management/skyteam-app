@@ -55,7 +55,7 @@ export class TablePageComponent {
         // Sobrescribir el método filterPredicate
         this.dataSource.filterPredicate = (data: Client, filter: string) => {
           // Convertir el objeto de datos a una cadena de texto
-          const dataStr = data.idCliente + data.nombre + data.apellido + data.liderNombre;
+          const dataStr = data.idCliente + data.nombre  + data.liderNombre;
           return dataStr.toLowerCase().includes(filter);
         };
       });

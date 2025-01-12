@@ -14,25 +14,30 @@
     <div class="row">
       <div class="col">
         <mat-form-field appearance="outline">
-          <mat-label>Nombre</mat-label>
+          <mat-label>Nombre Completo</mat-label>
           <input matInput formControlName="nombre" type="text" placeholder="Nombre del Cliente">
         </mat-form-field>
       </div>
-
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Apellido</mat-label>
-          <input matInput formControlName="apellido" type="text" placeholder="Apellido del Cliente">
-        </mat-form-field>
-      </div>
-
     </div>
 
     <div class="row">
       <div class="col">
         <mat-form-field appearance="outline">
           <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="telefono" type="tel" placeholder="Teléfono del Cliente" maxlength="10">
+          <input matInput formControlName="telefono" type="tel" placeholder="Teléfono del Cliente" maxlength="15">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Paquete</mat-label>
+          <mat-select formControlName="paquete">
+            <mat-option *ngFor="let paquete of paquetes" [value]="paquete?.id">
+              {{paquete?.nombre}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
     </div>

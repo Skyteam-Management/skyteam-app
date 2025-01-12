@@ -11,6 +11,7 @@ import { from } from 'rxjs';
 import { AddEditClientComponent } from '../add-edit-clientes/add-edit-clientes.component';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
+import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
 
 @Component({
   selector: 'app-clientes-table',
@@ -21,7 +22,9 @@ export class ClientesTableComponent implements OnInit {
   clientList: Client[] = [];
   lideresList: Lider[] = [];
 
-  displayedColumns: string[] = ['idCliente', 'nombre', 'apellido', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'estado', 'actions'];
+  paquetes = PAQUETES;
+
+  displayedColumns: string[] = ['idCliente', 'nombre', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'paquete', 'estado', 'actions'];
   dataSource: MatTableDataSource<Client> = new MatTableDataSource();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -59,7 +62,7 @@ export class ClientesTableComponent implements OnInit {
         // Sobrescribir el método filterPredicate
         this.dataSource.filterPredicate = (data: Client, filter: string) => {
           // Convertir el objeto de datos a una cadena de texto
-          const dataStr = data.idCliente + data.nombre + data.apellido + data.liderNombre + data.telefono;
+          const dataStr = data.idCliente + data.nombre + data.liderNombre + data.telefono;
           return dataStr.toLowerCase().includes(filter);
         };
       });
@@ -81,6 +84,30 @@ export class ClientesTableComponent implements OnInit {
     return 'no hay nombre';
   }
 
+  getPaqueteName(paqueteId: number): string {
+    const paquete = this.paquetes.find(p => p.id === paqueteId);
+    return paquete ? paquete.nombre : 'Desconocido';
+  }
+
+  getPaqueteDuration(paqueteId: number): number {
+    const paquete = this.paquetes.find(p => p.id === paqueteId);
+    switch (paquete?.nombre) {
+      case '12 MESES': return 365;
+      case '9 MESES': return 273;
+      case '6 MESES': return 182;
+      case '3 MESES': return 91;
+      case '1 MES': return 30;
+      default: return 0;
+    }
+  }
+
+  calculateFechaVencimiento(fechaInicio: Date, paqueteId: number): Date {
+    const duration = this.getPaqueteDuration(paqueteId);
+    const fechaInicioDate = new Date(fechaInicio);
+    fechaInicioDate.setDate(fechaInicioDate.getDate() + duration);
+    return fechaInicioDate;
+  }
+ 
   add28Days(fechaInicio: string): string {
     const date = new Date(fechaInicio);
     date.setDate(date.getDate() + 28);
