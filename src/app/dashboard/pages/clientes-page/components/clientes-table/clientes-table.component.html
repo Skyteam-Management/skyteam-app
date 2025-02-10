@@ -47,8 +47,8 @@
       <ng-container matColumnDef="estado">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de pago </th>
         <td mat-cell *matCellDef="let row">
-          <span class="badge rounded-pill text-bg-danger" *ngIf="isExpired(row.fechaInicio)">Vencido</span>
-          <span class="badge rounded-pill text-bg-success" *ngIf="!isExpired(row.fechaInicio)">Activo</span>
+          <span class="badge rounded-pill text-bg-danger" *ngIf="isExpired(row.fechaInicio, row.paquete)">Vencido</span>
+    <span class="badge rounded-pill text-bg-success" *ngIf="!isExpired(row.fechaInicio, row.paquete)">Activo</span>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions">

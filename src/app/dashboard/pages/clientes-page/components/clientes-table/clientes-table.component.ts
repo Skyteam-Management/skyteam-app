@@ -39,10 +39,14 @@ export class ClientesTableComponent implements OnInit {
     this.getLideres();
   }
 
-  isExpired(fechaInicio: string): boolean {
-    const twentyEightDaysAgo = new Date();
-    twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 28);
-    return new Date(fechaInicio) < twentyEightDaysAgo;
+  isExpired(fechaInicio: string, paqueteId: number): boolean {
+    const duracionPaquete = this.getPaqueteDuration(paqueteId);
+  
+    const fechaVencimiento = new Date(fechaInicio);
+    fechaVencimiento.setDate(fechaVencimiento.getDate() + duracionPaquete);
+  
+    const fechaActual = new Date();
+    return fechaVencimiento < fechaActual;
   }
   
   getClientes(): void {
@@ -96,7 +100,7 @@ export class ClientesTableComponent implements OnInit {
       case '9 MESES': return 273;
       case '6 MESES': return 182;
       case '3 MESES': return 91;
-      case '1 MES': return 30;
+      case '1 MES': return 31;
       default: return 0;
     }
   }
