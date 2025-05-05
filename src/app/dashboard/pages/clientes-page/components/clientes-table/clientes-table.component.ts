@@ -24,7 +24,7 @@ export class ClientesTableComponent implements OnInit {
 
   paquetes = PAQUETES;
 
-  displayedColumns: string[] = ['idCliente', 'nombre', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'paquete', 'estado', 'actions'];
+  displayedColumns: string[] = ['nombre', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'paquete', 'estado', 'actions'];
   dataSource: MatTableDataSource<Client> = new MatTableDataSource();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -66,7 +66,7 @@ export class ClientesTableComponent implements OnInit {
         // Sobrescribir el método filterPredicate
         this.dataSource.filterPredicate = (data: Client, filter: string) => {
           // Convertir el objeto de datos a una cadena de texto
-          const dataStr = data.idCliente + data.nombre + data.liderNombre + data.telefono;
+          const dataStr = data.nombre + data.liderNombre + data.telefono;
           return dataStr.toLowerCase().includes(filter);
         };
       });
@@ -96,11 +96,20 @@ export class ClientesTableComponent implements OnInit {
   getPaqueteDuration(paqueteId: number): number {
     const paquete = this.paquetes.find(p => p.id === paqueteId);
     switch (paquete?.nombre) {
-      case '12 MESES': return 365;
-      case '9 MESES': return 273;
-      case '6 MESES': return 182;
-      case '3 MESES': return 91;
       case '1 MES': return 31;
+      case '2 MESES': return 60;
+      case '3 MESES': return 91;
+      case '4 MESES': return 121;
+      case '5 MESES': return 151;
+      case '6 MESES': return 182;
+      case '7 MESES': return 212;
+      case '8 MESES': return 243;
+      case '9 MESES': return 273;
+      case '10 MESES': return 304;
+      case '11 MESES': return 334;
+      case '12 MESES': return 365;
+      case '15 DÍAS': return 15;
+      case '8 DÍAS': return 8;
       default: return 0;
     }
   }

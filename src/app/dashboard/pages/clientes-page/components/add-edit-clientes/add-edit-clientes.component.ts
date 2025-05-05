@@ -29,7 +29,6 @@ export class AddEditClientComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.clientForm = this.fb.group({
-      idCliente: ['', Validators.required],
       nombre: ['', Validators.required],
       telefono: ['', Validators.required],
       lider: ['', Validators.required],
