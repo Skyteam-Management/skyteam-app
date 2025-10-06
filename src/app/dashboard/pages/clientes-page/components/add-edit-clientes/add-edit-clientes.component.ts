@@ -36,27 +36,51 @@ export class AddEditClientComponent implements OnInit {
       fechaInicio: [new Date(), Validators.required] // Initialize with current date
     });
 
-    if (this.data && this.data.idCliente) {
-      // Convert the fechaInicio string to a Date object
-      if (this.data.fechaInicio && typeof this.data.fechaInicio === 'string') {
-        this.data.fechaInicio = new Date(this.data.fechaInicio);
-      }
-      this.clientForm.patchValue(this.data);
-    }
+    // Debug: Log the received data
+    console.log('Data received in dialog:', this.data);
   }
 
   ngOnInit(): void {
     this.liderService.getLideres().subscribe(lideres => {
       this.lideres = lideres;
-    })
+      
+      // Initialize form with data after lideres are loaded
+      if (this.data && this.data.id) {
+        console.log('Editing client with data:', this.data);
+        
+        // Convert the fechaInicio string to a Date object
+        let fechaInicioDate = new Date();
+        if (this.data.fechaInicio) {
+          if (typeof this.data.fechaInicio === 'string') {
+            fechaInicioDate = new Date(this.data.fechaInicio);
+          } else {
+            fechaInicioDate = this.data.fechaInicio;
+          }
+        }
+        
+        // Prepare the data for the form
+        const formData = {
+          nombre: this.data.nombre || '',
+          telefono: this.data.telefono || '',
+          lider: this.data.lider || '',
+          paquete: this.data.paquete || '',
+          fechaInicio: fechaInicioDate
+        };
+        
+        console.log('Form data to patch:', formData);
+        this.clientForm.patchValue(formData);
+      }
+    });
   }
 
   onFormSubmit() {
     if (this.clientForm.valid) {
       if (this.data) {
         const updateClient: Client = this.clientForm.value;
+        
         this.clientService.updateClient(this.data.id, updateClient)
           .then((val: any) => {
+            
             Swal.fire('Éxito', `Cliente: ${updateClient.nombre} actualizado correctamente`, 'success');
             this.dialogRef.close(true);
           })
