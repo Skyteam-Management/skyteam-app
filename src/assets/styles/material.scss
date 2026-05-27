@@ -68,11 +68,11 @@ $my-custom-accent: (
   )
 );
 
-$my-primary: mat.define-palette($my-custom-accent, 50);
-$my-accent: mat.define-palette($my-custom-accent, 600); // Usando la nueva paleta de colores personalizada para el color de acento
-$my-warn: mat.define-palette(mat.$red-palette, 600);
+$my-primary: mat.m2-define-palette($my-custom-accent, 50);
+$my-accent: mat.m2-define-palette($my-custom-accent, 600); // Usando la nueva paleta de colores personalizada para el color de acento
+$my-warn: mat.m2-define-palette(mat.$m2-red-palette, 600);
 
-$my-theme: mat.define-dark-theme(
+$my-theme: mat.m2-define-dark-theme(
   (
     color: (
       primary: $my-primary,
