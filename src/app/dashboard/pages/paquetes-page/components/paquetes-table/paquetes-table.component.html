@@ -16,30 +16,30 @@
         <thead class="border-b border-(--color-border) bg-(--color-background)/40">
           <tr>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Nombre
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'nombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('dias')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('dias')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Días
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'dias' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('enUso')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('enUso')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Clientes
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'enUso' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('activo')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('activo')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Estado
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'activo' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
-            <th class="text-right font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
+            <th class="text-right text-[11px] uppercase tracking-[0.18em] font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
           </tr>
         </thead>
         <tbody>

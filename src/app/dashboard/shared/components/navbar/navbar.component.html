@@ -8,60 +8,88 @@
   }
 
   <aside
-    class="fixed lg:sticky top-0 left-0 z-40 h-screen w-64 shrink-0 border-r border-(--color-border) bg-(--color-card) flex flex-col transition-transform duration-200 ease-out lg:translate-x-0"
+    class="fixed lg:sticky top-0 left-0 z-40 h-screen w-72 shrink-0 border-r border-(--color-border)/80 bg-(--color-card)/95 backdrop-blur-sm flex flex-col transition-transform duration-200 ease-out lg:translate-x-0 relative overflow-hidden"
     [class.translate-x-0]="isOpen()"
     [class.-translate-x-full]="!isOpen()"
   >
-    <div class="h-14 flex items-center px-4 border-b border-(--color-border)">
-      <a routerLink="/dashboard" class="text-sm font-semibold tracking-tight truncate" (click)="close()">
-        Abundant Virtual Money
-      </a>
+    <!-- ambient layers behind the sidebar content -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -top-32 -left-16 h-64 w-64 rounded-full bg-(--color-gold)/10 blur-[80px]"></div>
+      <div class="auth-dots absolute inset-0 opacity-40 [mask-image:linear-gradient(to_bottom,black,transparent_75%)]"></div>
     </div>
 
-    <nav class="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
-      <a
-        routerLink="/dashboard/clientes"
-        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
-        (click)="close()"
-        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
-      >
-        <svg lucideIcon [lucideIcon]="Users" class="size-4"></svg>
-        <span>Clientes</span>
-      </a>
-      <a
-        routerLink="/dashboard/patrocinadores"
-        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
-        (click)="close()"
-        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
-      >
-        <svg lucideIcon [lucideIcon]="Gem" class="size-4"></svg>
-        <span>Patrocinadores</span>
-      </a>
-      <a
-        routerLink="/dashboard/paquetes"
-        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
-        (click)="close()"
-        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
-      >
-        <svg lucideIcon [lucideIcon]="Package" class="size-4"></svg>
-        <span>Paquetes</span>
-      </a>
-    </nav>
+    <div class="relative flex flex-col h-full">
+      <!-- brand -->
+      <div class="h-16 flex items-center px-5 border-b border-(--color-border)/70">
+        <a routerLink="/dashboard" class="flex items-baseline gap-1.5 truncate" (click)="close()">
+          <span class="font-(family-name:--font-display) text-xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Abundant</span>
+          <span class="font-(family-name:--font-display) italic text-xl text-(--color-gold)" style="font-variation-settings: 'opsz' 72, 'SOFT' 80;">Virtual</span>
+          <span class="font-(family-name:--font-display) text-xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Money<span class="text-(--color-gold)">.</span></span>
+        </a>
+      </div>
 
-    <div class="p-3 border-t border-(--color-border)">
-      <button
-        type="button"
-        (click)="logOut()"
-        class="w-full inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
-      >
-        <svg lucideIcon [lucideIcon]="LogOut" class="size-4"></svg>
-        <span>Salir</span>
-      </button>
+      <!-- nav -->
+      <div class="flex-1 flex flex-col px-3 py-5 overflow-y-auto">
+        <span class="px-3 mb-3 text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/70">Gestión</span>
+
+        <nav class="flex flex-col gap-0.5">
+          <a
+            routerLink="/dashboard/clientes"
+            routerLinkActive="text-(--color-foreground) bg-(--color-accent)/60 border-(--color-gold)"
+            (click)="close()"
+            class="inline-flex items-center gap-3 h-10 pl-3 pr-3 rounded-md border-l-2 border-transparent text-sm text-(--color-muted-foreground) hover:bg-(--color-accent)/40 hover:text-(--color-foreground) transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="Users" class="size-4"></svg>
+            <span>Clientes</span>
+          </a>
+          <a
+            routerLink="/dashboard/patrocinadores"
+            routerLinkActive="text-(--color-foreground) bg-(--color-accent)/60 border-(--color-gold)"
+            (click)="close()"
+            class="inline-flex items-center gap-3 h-10 pl-3 pr-3 rounded-md border-l-2 border-transparent text-sm text-(--color-muted-foreground) hover:bg-(--color-accent)/40 hover:text-(--color-foreground) transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="Gem" class="size-4"></svg>
+            <span>Patrocinadores</span>
+          </a>
+          <a
+            routerLink="/dashboard/paquetes"
+            routerLinkActive="text-(--color-foreground) bg-(--color-accent)/60 border-(--color-gold)"
+            (click)="close()"
+            class="inline-flex items-center gap-3 h-10 pl-3 pr-3 rounded-md border-l-2 border-transparent text-sm text-(--color-muted-foreground) hover:bg-(--color-accent)/40 hover:text-(--color-foreground) transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="Package" class="size-4"></svg>
+            <span>Paquetes</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- logout + ornament -->
+      <div class="px-3 pb-4 pt-3 border-t border-(--color-border)/70">
+        <button
+          type="button"
+          (click)="logOut()"
+          class="w-full inline-flex items-center gap-3 h-10 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent)/40 hover:text-(--color-foreground) transition-colors"
+        >
+          <svg lucideIcon [lucideIcon]="LogOut" class="size-4"></svg>
+          <span>Cerrar sesión</span>
+        </button>
+        <div class="mt-4 flex items-center gap-3 text-(--color-muted-foreground)/50 px-3">
+          <span class="block h-px flex-1 bg-(--color-border)"></span>
+          <span class="text-[10px] uppercase tracking-[0.4em]">AVM · MMXXVI</span>
+          <span class="block h-px flex-1 bg-(--color-border)"></span>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <div class="flex-1 min-w-0 flex flex-col">
-    <header class="lg:hidden sticky top-0 z-20 h-14 border-b border-(--color-border) bg-(--color-background)/80 backdrop-blur flex items-center px-4 gap-3">
+  <div class="flex-1 min-w-0 flex flex-col relative">
+    <!-- main background atmosphere — subtle, doesn't compete with data -->
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-0 lg:left-72">
+      <div class="absolute -top-40 right-1/4 h-[28rem] w-[28rem] rounded-full bg-(--color-gold)/4 blur-[120px]"></div>
+      <div class="auth-grain absolute inset-0 opacity-[0.06] mix-blend-overlay"></div>
+    </div>
+
+    <header class="lg:hidden sticky top-0 z-20 h-14 border-b border-(--color-border)/70 bg-(--color-background)/80 backdrop-blur flex items-center px-4 gap-3">
       <button
         type="button"
         (click)="toggle()"
@@ -70,10 +98,12 @@
       >
         <svg lucideIcon [lucideIcon]="isOpen() ? X : Menu" class="size-5"></svg>
       </button>
-      <span class="text-sm font-semibold tracking-tight truncate">Abundant Virtual Money</span>
+      <span class="font-(family-name:--font-display) text-base tracking-tight truncate" style="font-variation-settings: 'opsz' 60;">
+        Abundant <span class="italic text-(--color-gold)">Virtual</span> Money
+      </span>
     </header>
 
-    <main class="flex-1 p-6 lg:p-10">
+    <main class="relative flex-1 p-6 lg:p-10">
       <router-outlet></router-outlet>
     </main>
   </div>

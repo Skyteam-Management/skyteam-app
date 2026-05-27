@@ -5,8 +5,12 @@
         <svg lucideIcon [lucideIcon]="TriangleAlert" class="size-5"></svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h2 class="text-base font-semibold">{{ data.title ?? 'Eliminar' }}</h2>
-        <p class="text-sm text-(--color-muted-foreground) mt-1">
+        <div class="flex items-center gap-2.5 mb-1.5">
+          <span class="block h-px w-5 bg-(--color-destructive)"></span>
+          <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)">Confirmar</span>
+        </div>
+        <h2 class="font-(family-name:--font-display) text-xl tracking-tight leading-none" style="font-variation-settings: 'opsz' 60;">{{ data.title ?? 'Eliminar' }}</h2>
+        <p class="text-sm text-(--color-muted-foreground) mt-3">
           {{ data.message ?? '¿Estás seguro?' }}
           @if (data.name) {
             <span class="font-medium text-(--color-foreground)"> {{ data.name }}</span>

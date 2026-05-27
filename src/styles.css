@@ -11,8 +11,9 @@
   --color-border: oklch(1 0 0 / 10%);
   --color-input: oklch(1 0 0 / 12%);
   --color-ring: oklch(0.556 0 0);
-  --color-primary: oklch(0.985 0 0);
-  --color-primary-foreground: oklch(0.205 0 0);
+  /* Primary == gold (semantic alias). All CTAs across the app land here. */
+  --color-primary: oklch(0.82 0.13 78);
+  --color-primary-foreground: oklch(0.16 0 0);
   --color-accent: oklch(0.269 0 0);
   --color-accent-foreground: oklch(0.985 0 0);
   --color-destructive: oklch(0.577 0.245 27.325);

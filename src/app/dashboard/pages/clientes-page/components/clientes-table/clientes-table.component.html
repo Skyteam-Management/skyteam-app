@@ -18,48 +18,48 @@
         <thead class="border-b border-(--color-border) bg-(--color-background)/40">
           <tr>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Nombre
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'nombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('telefono')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('telefono')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Teléfono
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'telefono' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('liderNombre')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('liderNombre')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Patrocinador
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'liderNombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('fechaInicio')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('fechaInicio')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Fecha de pago
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'fechaInicio' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('fechaVencimiento')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('fechaVencimiento')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Vencimiento
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'fechaVencimiento' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('paquete')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('paquete')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Paquete
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'paquete' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
             <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
-              <button type="button" (click)="toggleSort('estado')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+              <button type="button" (click)="toggleSort('estado')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
                 Estado
                 <svg lucideIcon [lucideIcon]="sortColumn() === 'estado' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
               </button>
             </th>
-            <th class="text-right font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
+            <th class="text-right text-[11px] uppercase tracking-[0.18em] font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
           </tr>
         </thead>
         <tbody>
