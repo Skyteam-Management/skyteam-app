@@ -11,20 +11,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Single test file:** `ng test --include='src/app/**/<file>.spec.ts'`
 - **Deploy (Firebase Hosting):** `ng build && firebase deploy` (hosting serves `dist/skyteam_app`; `src/_redirects` rewrites all paths to `/index.html` for SPA routing). Backend was migrated off Firebase to Supabase, but the static SPA is still hosted on Firebase Hosting — these are independent.
 
-Angular CLI 16.2 / TypeScript 5.1 / Node-managed via `package.json`. No lint script is configured.
+Angular CLI 21 / TypeScript 5.9 / Node 20.19+ or 22.12+ or 24.
 
 ## Architecture
 
-Angular 16 SPA backed by **Supabase** (Postgres + Auth) for managing *clientes* (clients with package/start-date) and *líderes/patrocinadores* (sponsors). UI strings and domain identifiers are in **Spanish** — keep new code consistent with that vocabulary (`cliente`, `lider`, `paquete`, `fechaInicio`).
+Angular 21 SPA, fully standalone (no NgModules), state via Signals, backed by **Supabase** (Postgres + Auth) for managing *clientes* (clients with package/start-date) and *líderes/patrocinadores* (sponsors). UI strings and domain identifiers are in **Spanish** — keep new code consistent with that vocabulary (`cliente`, `lider`, `paquete`, `fechaInicio`).
 
-The project was migrated from Firebase (Auth + Firestore) to Supabase in 2026. The data layer is now relational with foreign keys; the auth flow uses Supabase Auth via `@supabase/supabase-js`.
+The project went through two major migrations in 2026: Firebase → Supabase (data/auth), then Angular 16 → 21 with full standalone + signals + Tailwind UI.
 
-### Module layout & routing
+### Routing
 
-Two lazy-loaded feature modules wired in `app-routing.module.ts`:
+All routing lives in plain `Routes` files (no `RouterModule`):
 
-- **`/auth`** (`AuthModule`) — public. Wrapped by `LoginGuard` so authenticated users are redirected away. Children: `login`, `clientes` (a `TablePageComponent` that appears legacy — duplicates dashboard functionality; verify before extending it).
-- **`/dashboard`** (`DashboardModule`) — protected by `AuthGuard`. Children: `opciones`, `clientes`, `patrocinadores`. All render inside `DashboardLayoutComponent` (shared shell + navbar).
+- `src/app/app.routes.ts` — root routes, bootstrapped via `provideRouter(APP_ROUTES)` in `main.ts`.
+- `src/app/auth/auth.routes.ts` — `/auth/login`, `/auth/clientes` (a legacy `TablePageComponent` — read-only client list; verify before extending).
+- `src/app/dashboard/dashboard.routes.ts` — `/dashboard/opciones`, `/dashboard/clientes`, `/dashboard/patrocinadores`. All render inside `DashboardLayoutComponent` (sidebar + content).
+
+Auth: `/auth` is wrapped by `LoginGuard` (redirects authenticated users away). `/dashboard` is wrapped by `AuthGuard`.
 
 ### Supabase client
 
@@ -41,28 +44,30 @@ Environment shape (`src/app/environments/environment.ts`):
 ### Auth flow
 
 `AuthService` (`src/app/auth/services/auth.service.ts`):
-- Subscribes once to `supabase.client.auth.onAuthStateChange` and pushes the user into a `BehaviorSubject<User | null | undefined>`. The public `user$` filters out the initial `undefined` so guards using `take(1)` always wait for a real value (otherwise an authenticated user on a hard refresh could be redirected to login before the session is restored).
-- `logInWithEmail` calls `signInWithPassword`, navigates to `/dashboard` on success. On failure it runs `error.message` through a small Spanish translation table (e.g. *Invalid login credentials* → *Email o contraseña incorrectos*) and shows it via SweetAlert2 with the custom CSS classes `bg-negro`, `texto-blanco`, `confirm-button-class`.
+- Owns a `signal<User | null | undefined>(undefined)` as the source of truth. Exposes `user` (computed, never `undefined`), `isLoggedIn` (computed), and `user$` (Observable derived via `toObservable()` for the guards that still use rxjs `take(1)`).
+- The initial `undefined` state is intentional: guards filter it out so an authenticated user on hard refresh isn't bounced to login before Supabase restores the session.
+- `logInWithEmail` calls `signInWithPassword`, navigates to `/dashboard` on success. On failure it runs `error.message` through a small Spanish translation table (e.g. *Invalid login credentials* → *Email o contraseña incorrectos*) and shows it via SweetAlert2 with the custom CSS classes `bg-negro`, `texto-blanco`, `confirm-button-class` (these are restyled in `styles.css` to match the dark theme).
 - `logOut` calls `signOut` and navigates to `/auth/login` (use the full path — `/login` alone does not exist).
 - There is no signup flow. Users are created manually in the Supabase Auth dashboard.
 
-### Data services
+### Data services (Signals)
 
 `ClientService` and `LiderService` (`src/app/dashboard/services/`) follow the same pattern:
 
-- A private `BehaviorSubject<T[]>` is the source of truth. `getClients()` / `getLideres()` return it as an `Observable`.
-- CRUD methods (`add*`, `update*`, `delete*`) are **async/Promise-returning** — callers use `.then().catch()`. Each mutation calls a private `refresh()` that re-fetches and emits — that's why subscribers in components auto-update without any manual reload after dialog close.
+- Private `_clients = signal<Client[]>([])` / `_lideres = signal<Lider[]>([])` is the source of truth. Public `clients` / `lideres` are exposed as `asReadonly()` signals.
+- CRUD methods (`add*`, `update*`, `delete*`) are **async/Promise-returning** — callers use `.then().catch()`. Each mutation calls a private `refresh()` that re-fetches and updates the signal — that's why consumers don't need to manually trigger reloads after dialog close.
+- Consumer components read the service signals and (where they need a different shape, e.g. enriched with `liderNombre`) wrap them in `computed()`. Sync into non-reactive APIs (form fields, etc.) is done with `effect()`.
 - New row IDs are generated with `crypto.randomUUID()` in the service before insert; the DB has `id text PRIMARY KEY` with no default. IDs migrated from Firestore were preserved verbatim.
 
 **Column naming mismatch:** Postgres uses snake_case (`fecha_inicio`), the `Client` interface keeps camelCase (`fechaInicio`). `ClientService` has explicit `toClient` / `toRow` mappers — when adding new columns to `clientes`, update **both** mappers, not just the interface. `LiderService` doesn't need mapping because all lider columns are single-word.
 
 ### Domain model
 
-`Client` interface (`src/app/interfaces/client.interface.ts`) carries `paquete` (id referencing `PAQUETES`) and `fechaInicio: string | Date | null` — the union is intentional: forms produce `Date` (mat-datepicker), DB returns ISO `string`. The service handles both.
+`Client` interface (`src/app/interfaces/client.interface.ts`) carries `paquete` (id referencing `PAQUETES`) and `fechaInicio: string | Date | null` — the union is intentional: forms produce `Date` (native `<input type="date">`), DB returns ISO `string`. The service handles both.
 
-The package catalog lives in `dashboard/shared/constants/paquetes.constants.ts` as a static array sorted with Spanish locale; entries mix months (e.g. `'12 MESES'`) and days (`'15 DÍAS'`). When adding new packages, update that array — table expiry calculations in `clientes-table.component.ts` (`getPaqueteDuration`, `calculateFechaVencimiento`, `isExpired`) **parse the `nombre` string**.
+The package catalog lives in `dashboard/shared/constants/paquetes.constants.ts` as a static array sorted with Spanish locale; entries mix months (e.g. `'12 MESES'`) and days (`'15 DÍAS'`). When adding new packages, update that array — table expiry calculations in `clientes-table.component.ts` (`getPaqueteDuration`) **parse the `nombre` string**.
 
-**`paquete` ID type quirk:** `PAQUETES[].id` is `number`, but the DB column is `text` and stores it as a string (`"1"`). All lookups in `clientes-table.component.ts` use `String(p.id) === String(paqueteId)` to bridge the gap. Do not revert to `===` — it silently breaks the Paquete/estado/fechaVencimiento columns.
+**`paquete` ID type quirk:** `PAQUETES[].id` is `number`, but the DB column is `text` and stores it as a string (`"1"`). All lookups use `String(p.id) === String(paqueteId)` to bridge the gap. Do not revert to `===` — it silently breaks the Paquete/estado/fechaVencimiento columns.
 
 ### Database schema
 
@@ -77,11 +82,14 @@ RLS is **enabled** on both with a single policy: `authenticated` role has full a
 
 The `migration/` folder is a separate Node project with its own `package.json` — used to dump Firestore data and load it into Supabase. Both scripts (`export-firestore.mjs`, `import-supabase.mjs`) read from `migration/exports/firestore-<timestamp>/`. The folder's `.gitignore` keeps `service-account.json`, `.env`, `users.json`, and `exports/` out of git. If touching anything here, never commit credentials.
 
-### UI conventions
+### UI stack
 
-- **Angular Material** is re-exported via two separate `MaterialModule` files (`auth/modules/material`, `dashboard/modules/material`). When a component needs a new Material primitive (e.g. `MatDialogModule`), add it to the relevant feature's `MaterialModule` rather than importing it directly.
-- **Dialogs / modals** for delete and add-edit flows live as components under each page's `components/` folder (e.g. `clientes-page/components/add-edit-clientes`, `components/delete`) and are declared in `DashboardModule`.
-- **User feedback** uses **SweetAlert2** (`sweetalert2`), not Material snackbars/dialogs, for error and confirmation messaging — match this pattern for new flows.
+- **Tailwind CSS v4** via PostCSS (`postcss.config.js` + `@tailwindcss/postcss`). Design tokens live in `src/styles.css` inside `@theme { ... }` as OKLCH colors (`--color-background`, `--color-card`, `--color-border`, `--color-primary`, `--color-destructive`, `--color-success`, etc.). Reference them in templates as `bg-(--color-card)`, `text-(--color-foreground)`, etc.
+- **Dark theme only.** `<html class="dark">` is set in `index.html`; there is no light theme toggle.
+- **No component library.** Buttons, inputs, selects, tables are plain HTML with Tailwind classes. **Dialogs use `@angular/cdk/dialog`** (CDK Dialog) — inject `Dialog`, call `.open(Component, { data })`, return value via `DialogRef.close(value)`. Each dialog component renders its own frame (`w-full max-w-md rounded-lg border bg-(--color-card)...`); the CDK only provides overlay + focus trap + a11y.
+- **Tables are hand-rolled** with sort/filter/paginate computed from signals (`filter`, `sortColumn`, `sortDir`, `page`, `pageSize`). See `clientes-table.component.ts` for the pattern.
+- **Icons:** `@lucide/angular` v1.x. Use the dynamic icon pattern: import the icon constant (`LucideUsers`) and the `LucideDynamicIcon` component, then `<svg lucideIcon [lucideIcon]="Users" class="size-4"></svg>`. Do not try the old `<lucide-icon [img]="...">` pattern — that's pre-v1.
+- **Feedback** uses **SweetAlert2** (`sweetalert2`), not custom toasts/banners, for error and confirmation messaging — match this pattern for new flows.
 - Supabase errors are flat (`err.message`, not `err.error.message`). The Firebase-style `err.error.message` pattern that lingered in some catch handlers has been fixed — don't reintroduce it.
 
 ### TypeScript config note
