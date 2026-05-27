@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Paquete } from 'src/app/interfaces/paquete.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
+import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
 
 @Component({
   selector: 'app-add-edit-paquete',
@@ -57,6 +58,6 @@ export class AddEditPaqueteComponent {
         Swal.fire('Éxito', `Paquete: ${payload.nombre} ${this.data?.id ? 'actualizado' : 'añadido'} correctamente`, 'success');
         this.dialogRef.close(true);
       })
-      .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+      .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
   }
 }

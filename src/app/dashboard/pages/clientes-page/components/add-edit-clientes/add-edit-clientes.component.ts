@@ -8,6 +8,7 @@ import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
+import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
 
 @Component({
   selector: 'app-add-edit-clientes',
@@ -71,14 +72,14 @@ export class AddEditClientComponent implements OnInit {
           Swal.fire('Éxito', `Cliente: ${formValue.nombre} actualizado correctamente`, 'success');
           this.dialogRef.close(true);
         })
-        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+        .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
     } else {
       this.clientService.addClient(formValue)
         .then(() => {
           Swal.fire('Éxito', `Cliente: ${formValue.nombre} añadido correctamente`, 'success');
           this.dialogRef.close(true);
         })
-        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+        .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
     }
   }
 }

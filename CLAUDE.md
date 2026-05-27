@@ -73,9 +73,11 @@ Environment shape (`src/app/environments/environment.ts`):
 
 Lives in `migration/schema.sql`. Three tables (all `id text PRIMARY KEY` — preserves Firestore-era UUIDs and lets the client generate IDs):
 
-- `lideres (id, nombre, apellido, created_at)`
+- `lideres (id, nombre, apellido, created_at)` — `unique (nombre, apellido)`.
 - `paquetes (id, nombre unique, dias, activo, created_at)` — catalog of available packages. `dias` drives the expiry calculation. Seeded with 14 default packages on fresh installs.
-- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete → paquetes.id ON DELETE SET NULL, fecha_inicio date, created_at)`
+- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete → paquetes.id ON DELETE SET NULL, fecha_inicio date, created_at)` — `unique nulls not distinct (nombre, telefono, lider, fecha_inicio)` prevents creating the exact same record twice. NULLS NOT DISTINCT (PG15+) means two NULLs compare as equal in the key.
+
+Text fields (`nombre`, `apellido`, `telefono`) are normalized to upper case via BEFORE INSERT/UPDATE triggers on each table — so dedup constraints work without `upper()` wrappers. The UI mirrors this with the `appUppercase` directive (`src/app/shared/directives/uppercase.directive.ts`). When a unique constraint trips, `shared/errors/supabase-error.ts` maps the constraint name to a Spanish message for SweetAlert.
 
 Plus the `clientes_view` view, which LEFT JOINs `paquetes` and `lideres` and exposes `paquete_nombre`, `paquete_dias`, `fecha_vencimiento`, `expirado`, `lider_nombre`, `lider_apellido`. Set with `security_invoker = true` so RLS on the base tables applies.
 

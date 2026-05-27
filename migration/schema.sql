@@ -5,7 +5,8 @@ create table if not exists lideres (
   id          text primary key,
   nombre      text not null,
   apellido    text not null,
-  created_at  timestamptz not null default now()
+  created_at  timestamptz not null default now(),
+  constraint lideres_nombre_apellido_key unique (nombre, apellido)
 );
 
 create table if not exists paquetes (
@@ -23,7 +24,9 @@ create table if not exists clientes (
   lider         text references lideres(id) on delete set null,
   paquete       text references paquetes(id) on delete set null,
   fecha_inicio  date,
-  created_at    timestamptz not null default now()
+  created_at    timestamptz not null default now(),
+  constraint clientes_unique_business_key
+    unique nulls not distinct (nombre, telefono, lider, fecha_inicio)
 );
 
 create index if not exists idx_clientes_lider   on clientes(lider);
