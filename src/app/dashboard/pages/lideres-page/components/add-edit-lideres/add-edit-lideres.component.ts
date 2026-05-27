@@ -6,9 +6,10 @@ import { Lider } from 'src/app/interfaces/lider.interface';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-add-edit-lider',
-  templateUrl: './add-edit-lideres.component.html',
-  styleUrls: ['./add-edit-lideres.component.css']
+    selector: 'app-add-edit-lider',
+    templateUrl: './add-edit-lideres.component.html',
+    styleUrls: ['./add-edit-lideres.component.css'],
+    standalone: false
 })
 export class AddEditLiderComponent {
   liderForm: FormGroup;

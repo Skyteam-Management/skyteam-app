@@ -6,10 +6,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddEditLiderComponent } from './components/add-edit-lideres/add-edit-lideres.component';
 
 @Component({
-  selector: 'app-lideres-page',
-  templateUrl: './lideres-page.component.html',
-  styleUrls: ['./lideres-page.component.css'],
-  providers: [DatePipe]
+    selector: 'app-lideres-page',
+    templateUrl: './lideres-page.component.html',
+    styleUrls: ['./lideres-page.component.css'],
+    providers: [DatePipe],
+    standalone: false
 })
 export class LideresPageComponent {
 

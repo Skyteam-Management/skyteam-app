@@ -14,9 +14,10 @@ import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
 
 @Component({
-  selector: 'app-clientes-table',
-  templateUrl: './clientes-table.component.html',
-  styleUrls: ['./clientes-table.component.css']
+    selector: 'app-clientes-table',
+    templateUrl: './clientes-table.component.html',
+    styleUrls: ['./clientes-table.component.css'],
+    standalone: false
 })
 export class ClientesTableComponent implements OnInit {
   clientList: Client[] = [];

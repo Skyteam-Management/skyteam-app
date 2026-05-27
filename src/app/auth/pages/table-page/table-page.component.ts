@@ -8,9 +8,10 @@ import { Client } from 'src/app/interfaces/client.interface';
 import { Lider } from 'src/app/interfaces/lider.interface';
 
 @Component({
-  selector: 'app-table-page',
-  templateUrl: './table-page.component.html',
-  styleUrls: ['./table-page.component.css']
+    selector: 'app-table-page',
+    templateUrl: './table-page.component.html',
+    styleUrls: ['./table-page.component.css'],
+    standalone: false
 })
 export class TablePageComponent {
   clientList: Client[] = [];

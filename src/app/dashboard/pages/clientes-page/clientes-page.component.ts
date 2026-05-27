@@ -6,10 +6,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddEditClientComponent } from './components/add-edit-clientes/add-edit-clientes.component';
 
 @Component({
-  selector: 'app-clientes-page',
-  templateUrl: './clientes-page.component.html',
-  styleUrls: ['./clientes-page.component.css'],
-  providers: [DatePipe]
+    selector: 'app-clientes-page',
+    templateUrl: './clientes-page.component.html',
+    styleUrls: ['./clientes-page.component.css'],
+    providers: [DatePipe],
+    standalone: false
 })
 export class ClientesPageComponent {
 

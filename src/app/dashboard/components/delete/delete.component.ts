@@ -2,9 +2,10 @@ import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-delete',
-  templateUrl: './delete.component.html',
-  styleUrls: ['./delete.component.css']
+    selector: 'app-delete',
+    templateUrl: './delete.component.html',
+    styleUrls: ['./delete.component.css'],
+    standalone: false
 })
 export class DeleteComponent {
   nombre !: string;

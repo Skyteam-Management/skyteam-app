@@ -9,9 +9,10 @@ import { Lider } from 'src/app/interfaces/lider.interface';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-add-edit-clientes',
-  templateUrl: './add-edit-clientes.component.html',
-  styleUrls: ['./add-edit-clientes.component.css']
+    selector: 'app-add-edit-clientes',
+    templateUrl: './add-edit-clientes.component.html',
+    styleUrls: ['./add-edit-clientes.component.css'],
+    standalone: false
 })
 export class AddEditClientComponent implements OnInit {
   clientForm: FormGroup;

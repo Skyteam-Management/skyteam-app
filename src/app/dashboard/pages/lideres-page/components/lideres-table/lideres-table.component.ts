@@ -11,9 +11,10 @@ import { from } from 'rxjs';
 import { AddEditLiderComponent } from '../add-edit-lideres/add-edit-lideres.component';
 
 @Component({
-  selector: 'app-lideres-table',
-  templateUrl: './lideres-table.component.html',
-  styleUrls: ['./lideres-table.component.css']
+    selector: 'app-lideres-table',
+    templateUrl: './lideres-table.component.html',
+    styleUrls: ['./lideres-table.component.css'],
+    standalone: false
 })
 export class LideresTableComponent implements OnInit {
   liderList: Lider[] = [];
