@@ -53,17 +53,8 @@
       </div>
 
       <div class="flex flex-col gap-1.5">
-        <label for="lider" class="text-sm font-medium">Patrocinador</label>
-        <select
-          id="lider"
-          formControlName="lider"
-          class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
-        >
-          <option value="" disabled>Selecciona uno</option>
-          @for (lider of lideres(); track lider.id) {
-            <option [value]="lider.id">{{ lider.nombre }} {{ lider.apellido }}</option>
-          }
-        </select>
+        <label class="text-sm font-medium">Patrocinador</label>
+        <app-lider-combobox formControlName="lider" />
       </div>
     </div>
 

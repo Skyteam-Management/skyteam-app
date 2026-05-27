@@ -4,28 +4,26 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { LucideDynamicIcon, LucideX } from '@lucide/angular';
 import Swal from 'sweetalert2';
 import { ClientService } from 'src/app/dashboard/services/client.service';
-import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
+import { LiderComboboxComponent } from '../lider-combobox/lider-combobox.component';
 
 @Component({
   selector: 'app-add-edit-clientes',
   templateUrl: './add-edit-clientes.component.html',
-  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective],
+  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective, LiderComboboxComponent],
 })
 export class AddEditClientComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clientService = inject(ClientService);
-  private liderService = inject(LiderService);
   private paqueteService = inject(PaqueteService);
   private dialogRef = inject(DialogRef<boolean>);
   public data = inject(DIALOG_DATA);
 
   readonly X = LucideX;
   readonly paquetes = this.paqueteService.activos;
-  readonly lideres = this.liderService.lideres;
   readonly today = new Date().toISOString().split('T')[0];
 
   clientForm: FormGroup = this.fb.group({
