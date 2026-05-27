@@ -26,9 +26,11 @@
         <mat-form-field appearance="outline">
           <mat-label>Paquete</mat-label>
           <mat-select formControlName="paquete">
-            <mat-option *ngFor="let paquete of paquetes" [value]="paquete?.id">
-              {{paquete?.nombre}}
-            </mat-option>
+            @for (paquete of paquetes; track paquete) {
+              <mat-option [value]="paquete?.id">
+                {{paquete?.nombre}}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -39,9 +41,11 @@
         <mat-form-field appearance="outline">
           <mat-label>Líder</mat-label>
           <mat-select formControlName="lider">
-            <mat-option *ngFor="let lider of lideres" [value]="lider.id">
-              {{lider.nombre }} {{lider.apellido}}
-            </mat-option>
+            @for (lider of lideres; track lider) {
+              <mat-option [value]="lider.id">
+                {{lider.nombre }} {{lider.apellido}}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
