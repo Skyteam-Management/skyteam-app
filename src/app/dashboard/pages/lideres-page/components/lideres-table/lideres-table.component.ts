@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { LucideDynamicIcon, LucideArrowUpDown, LucideArrowUp, LucideArrowDown, LucidePencil, LucideTrash2, LucideSearch, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
-import Swal from 'sweetalert2';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.component';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { AddEditLiderComponent } from '../add-edit-lideres/add-edit-lideres.component';
@@ -18,6 +18,7 @@ type SortDir = 'asc' | 'desc';
 export class LideresTableComponent {
   private _liderService = inject(LiderService);
   private _dialog = inject(Dialog);
+  private _toast = inject(ToastService);
 
   readonly ArrowUpDown = LucideArrowUpDown;
   readonly ArrowUp = LucideArrowUp;
@@ -101,9 +102,9 @@ export class LideresTableComponent {
     });
     ref.closed.subscribe((result) => {
       if (result) {
-        this._liderService.deleteLider(row.id!).catch(() => {
-          Swal.fire('Error', 'Ha ocurrido un error al eliminar el patrocinador', 'error');
-        });
+        this._liderService.deleteLider(row.id!)
+          .then(() => this._toast.success('Patrocinador eliminado', `${row.nombre} ${row.apellido}`))
+          .catch(() => this._toast.error('No se pudo eliminar', 'Ha ocurrido un error al eliminar el patrocinador'));
       }
     });
   }

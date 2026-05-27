@@ -3,13 +3,14 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs';
-import Swal from 'sweetalert2';
 import { SupabaseService } from '../../services/supabase.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private supabase = inject(SupabaseService);
   private router = inject(Router);
+  private toast = inject(ToastService);
 
   private readonly _user = signal<User | null | undefined>(undefined);
   readonly user = computed(() => this._user() ?? null);
@@ -28,16 +29,7 @@ export class AuthService {
   async logInWithEmail(email: string, password: string) {
     const { data, error } = await this.supabase.client.auth.signInWithPassword({ email, password });
     if (error) {
-      Swal.fire({
-        icon: 'error',
-        text: this.translateError(error.message),
-        heightAuto: false,
-        customClass: {
-          confirmButton: 'confirm-button-class',
-          popup: 'bg-negro',
-          validationMessage: 'texto-blanco',
-        },
-      });
+      this.toast.error('No se pudo iniciar sesión', this.translateError(error.message));
       return null;
     }
     this.router.navigate(['dashboard']);

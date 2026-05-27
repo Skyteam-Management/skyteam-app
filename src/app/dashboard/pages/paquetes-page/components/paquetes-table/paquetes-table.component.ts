@@ -1,9 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { LucideDynamicIcon, LucideArrowUpDown, LucideArrowUp, LucideArrowDown, LucidePencil, LucideTrash2, LucideSearch, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
-import Swal from 'sweetalert2';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { ClientService } from 'src/app/dashboard/services/client.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.component';
 import { Paquete } from 'src/app/interfaces/paquete.interface';
 import { AddEditPaqueteComponent } from '../add-edit-paquetes/add-edit-paquetes.component';
@@ -24,6 +24,7 @@ export class PaquetesTableComponent {
   private _paqueteService = inject(PaqueteService);
   private _clientService = inject(ClientService);
   private _dialog = inject(Dialog);
+  private _toast = inject(ToastService);
 
   readonly ArrowUpDown = LucideArrowUpDown;
   readonly ArrowUp = LucideArrowUp;
@@ -117,9 +118,9 @@ export class PaquetesTableComponent {
     });
     ref.closed.subscribe((result) => {
       if (result) {
-        this._paqueteService.deletePaquete(row.id).catch((err: any) => {
-          Swal.fire('Error', err?.message ?? 'Ha ocurrido un error al eliminar el paquete', 'error');
-        });
+        this._paqueteService.deletePaquete(row.id)
+          .then(() => this._toast.success('Paquete eliminado', row.nombre))
+          .catch((err: any) => this._toast.error('No se pudo eliminar', err?.message ?? 'Ha ocurrido un error al eliminar el paquete'));
       }
     });
   }

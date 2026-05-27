@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideX } from '@lucide/angular';
-import Swal from 'sweetalert2';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
@@ -17,6 +17,7 @@ export class AddEditLiderComponent {
   private fb = inject(FormBuilder);
   private liderService = inject(LiderService);
   private dialogRef = inject(DialogRef<boolean>);
+  private toast = inject(ToastService);
   public data = inject(DIALOG_DATA);
 
   readonly X = LucideX;
@@ -43,17 +44,17 @@ export class AddEditLiderComponent {
     if (this.data?.id) {
       this.liderService.updateLider(this.data.id, formValue)
         .then(() => {
-          Swal.fire('Éxito', `Patrocinador: ${formValue.nombre} actualizado correctamente`, 'success');
+          this.toast.success('Patrocinador actualizado', `${formValue.nombre} ${formValue.apellido}`);
           this.dialogRef.close(true);
         })
-        .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
+        .catch((err: any) => this.toast.error('No se pudo actualizar', describeSupabaseError(err)));
     } else {
       this.liderService.addLider(formValue)
         .then(() => {
-          Swal.fire('Éxito', `Patrocinador: ${formValue.nombre} añadido correctamente`, 'success');
+          this.toast.success('Patrocinador añadido', `${formValue.nombre} ${formValue.apellido}`);
           this.dialogRef.close(true);
         })
-        .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
+        .catch((err: any) => this.toast.error('No se pudo añadir', describeSupabaseError(err)));
     }
   }
 }

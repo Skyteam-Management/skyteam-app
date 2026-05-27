@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideX } from '@lucide/angular';
-import Swal from 'sweetalert2';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { Paquete } from 'src/app/interfaces/paquete.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
@@ -17,6 +17,7 @@ export class AddEditPaqueteComponent {
   private fb = inject(FormBuilder);
   private paqueteService = inject(PaqueteService);
   private dialogRef = inject(DialogRef<boolean>);
+  private toast = inject(ToastService);
   public data = inject(DIALOG_DATA) as Paquete | undefined;
 
   readonly X = LucideX;
@@ -54,10 +55,11 @@ export class AddEditPaqueteComponent {
       ? this.paqueteService.updatePaquete(this.data.id, payload)
       : this.paqueteService.addPaquete(payload);
 
+    const editing = !!this.data?.id;
     op.then(() => {
-        Swal.fire('Éxito', `Paquete: ${payload.nombre} ${this.data?.id ? 'actualizado' : 'añadido'} correctamente`, 'success');
+        this.toast.success(editing ? 'Paquete actualizado' : 'Paquete añadido', payload.nombre);
         this.dialogRef.close(true);
       })
-      .catch((err: any) => Swal.fire('Error', describeSupabaseError(err), 'error'));
+      .catch((err: any) => this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err)));
   }
 }

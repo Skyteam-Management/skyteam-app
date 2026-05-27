@@ -2,8 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { LucideDynamicIcon, LucideArrowUpDown, LucideArrowUp, LucideArrowDown, LucidePencil, LucideTrash2, LucideSearch, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
-import Swal from 'sweetalert2';
 import { ClientService } from 'src/app/dashboard/services/client.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.component';
 import { Client } from 'src/app/interfaces/client.interface';
 import { AddEditClientComponent } from '../add-edit-clientes/add-edit-clientes.component';
@@ -19,6 +19,7 @@ type SortDir = 'asc' | 'desc';
 export class ClientesTableComponent {
   private _clientService = inject(ClientService);
   private _dialog = inject(Dialog);
+  private _toast = inject(ToastService);
 
   readonly ArrowUpDown = LucideArrowUpDown;
   readonly ArrowUp = LucideArrowUp;
@@ -109,9 +110,9 @@ export class ClientesTableComponent {
     });
     ref.closed.subscribe((result) => {
       if (result) {
-        this._clientService.deleteClient(row.id!).catch(() => {
-          Swal.fire('Error', 'Ha ocurrido un error al eliminar el cliente', 'error');
-        });
+        this._clientService.deleteClient(row.id!)
+          .then(() => this._toast.success('Cliente eliminado', row.nombre))
+          .catch(() => this._toast.error('No se pudo eliminar', 'Ha ocurrido un error al eliminar el cliente'));
       }
     });
   }
