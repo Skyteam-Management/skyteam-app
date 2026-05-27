@@ -1,66 +1,60 @@
-<div class="contenedor-adm">
-
-  <button class="mb-4" routerLink="../" mat-raised-button color="primary" style="width: 100%">Volver</button>
-
-
-  <mat-form-field appearance="outline">
-    <mat-label>Buscador</mat-label>
-    <input appearance="fill" matInput (keyup)="applyFilter($event)"
-      placeholder="Busca por: nombre, apellido, patrocinador, etc..." #input>
-    </mat-form-field>
-
-    <div class="mat-elevation-z8">
-      <table mat-table [dataSource]="dataSource" matSort>
-
-        <ng-container matColumnDef="idCliente">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID Cliente </th>
-          <td mat-cell *matCellDef="let row"> {{row.idCliente}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
-          <td mat-cell *matCellDef="let row"> {{row.nombre}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="apellido">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido </th>
-          <td mat-cell *matCellDef="let row"> {{row.apellido}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="telefono">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Teléfono </th>
-          <td mat-cell *matCellDef="let row"> {{row.telefono}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="lider">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Patrocinador </th>
-          <td mat-cell *matCellDef="let row"> {{ row.liderNombre }} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de pago </th>
-          <td mat-cell *matCellDef="let row">
-            @if (isExpired(row.fechaInicio)) {
-              <span class="badge rounded-pill text-bg-danger">Vencido</span>
-            }
-            @if (!isExpired(row.fechaInicio)) {
-              <span class="badge rounded-pill text-bg-success">Activo</span>
-            }
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No hay datos relacionados a: "{{input.value}}"</td>
-        </tr>
-
-      </table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" aria-label="Select page of periodic elements"></mat-paginator>
-
-    </div>
-
-
+<div class="w-full max-w-5xl">
+  <div class="flex items-center justify-between gap-4 mb-6">
+    <h1 class="text-xl font-semibold tracking-tight">Lista de clientes</h1>
+    <a
+      routerLink="/auth/login"
+      class="inline-flex items-center gap-2 h-9 px-4 rounded-md border border-(--color-border) text-sm font-medium hover:bg-(--color-accent) transition-colors"
+    >
+      <svg lucideIcon [lucideIcon]="ArrowLeft" class="size-4"></svg>
+      Volver
+    </a>
   </div>
+
+  <div class="relative max-w-sm w-full mb-4">
+    <svg lucideIcon [lucideIcon]="Search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-(--color-muted-foreground)"></svg>
+    <input
+      type="search"
+      [value]="filter()"
+      (input)="onFilterChange($event)"
+      placeholder="Busca por nombre o patrocinador..."
+      class="w-full h-10 rounded-md border border-(--color-border) bg-(--color-input) pl-10 pr-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+    />
+  </div>
+
+  <div class="rounded-lg border border-(--color-border) bg-(--color-card) overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-(--color-border) bg-(--color-background)/40 text-(--color-muted-foreground)">
+          <tr>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">Nombre</th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">Patrocinador</th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">Fecha de pago</th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of filtered(); track row.id) {
+            <tr class="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-background)/40 transition-colors">
+              <td class="px-4 py-3 capitalize">{{ row.nombre }}</td>
+              <td class="px-4 py-3 capitalize">{{ row.liderNombre }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaInicio | date: 'd MMM, y') || '—' }}</td>
+              <td class="px-4 py-3">
+                @if (row.expirado) {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-destructive)/15 text-(--color-destructive)">Vencido</span>
+                } @else {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-success)/15 text-(--color-success)">Activo</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="px-4 py-12 text-center text-sm text-(--color-muted-foreground)">
+                Sin clientes que mostrar.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

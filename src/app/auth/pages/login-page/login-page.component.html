@@ -1,25 +1,56 @@
-<div class=" text-white">
-  <div class="contenido">
-    <form [formGroup]="loginForm" (ngSubmit)="logIn()">
-      <mat-form-field appearance="outline">
-        <mat-label>Correo</mat-label>
-        <input type="email" formControlName="email" matInput placeholder="Correo electrónico">
-        <mat-icon matSuffix>support_agent</mat-icon>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input formControlName="password" matInput [type]="hide ? 'password' : 'text'">
-        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-          [attr.aria-pressed]="hide">
-          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-      </mat-form-field>
-
-      <button type="submit" routerLink="" mat-raised-button color="accent">Ingresar</button>
-      <span routerLink="/auth/clientes" class="mt-4">Ver lista de clientes</span>
-    </form>
-    <div class="img">
-      <a target="_blank" href="https://www.jesusrodriguezc.com/"><img src="./assets/logo.png" alt=""></a>
-    </div>
+<div class="w-full max-w-sm">
+  <div class="flex flex-col items-center gap-2 mb-8">
+    <a href="https://www.jesusrodriguezc.com/" target="_blank" rel="noopener" class="block">
+      <img src="./assets/logo.png" alt="Logo" class="h-16 w-auto opacity-90" />
+    </a>
+    <h1 class="text-xl font-semibold tracking-tight">Abundant Virtual Money</h1>
+    <p class="text-sm text-(--color-muted-foreground)">Inicia sesión para continuar</p>
   </div>
+
+  <form [formGroup]="loginForm" (ngSubmit)="logIn()" class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label for="email" class="text-sm font-medium">Correo electrónico</label>
+      <div class="relative">
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+          class="w-full h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 pr-10 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        />
+        <svg lucideIcon [lucideIcon]="Mail" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-(--color-muted-foreground)"></svg>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="password" class="text-sm font-medium">Contraseña</label>
+      <div class="relative">
+        <input
+          id="password"
+          [type]="hide() ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          class="w-full h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 pr-10 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        />
+        <button
+          type="button"
+          (click)="togglePassword()"
+          [attr.aria-label]="hide() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center size-7 rounded text-(--color-muted-foreground) hover:text-(--color-foreground) hover:bg-(--color-accent) transition-colors"
+        >
+          <svg lucideIcon [lucideIcon]="hide() ? EyeOff : Eye" class="size-4"></svg>
+        </button>
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="!loginForm.valid"
+      class="mt-2 inline-flex items-center justify-center h-10 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+    >
+      Ingresar
+    </button>
+  </form>
 </div>

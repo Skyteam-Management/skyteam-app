@@ -1,10 +1,7 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatSelect, MatOption } from '@angular/material/select';
-import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import { LucideDynamicIcon, LucideX } from '@lucide/angular';
 import Swal from 'sweetalert2';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
@@ -14,64 +11,57 @@ import { Client } from 'src/app/interfaces/client.interface';
 @Component({
   selector: 'app-add-edit-clientes',
   templateUrl: './add-edit-clientes.component.html',
-  styleUrls: ['./add-edit-clientes.component.css'],
-  imports: [
-    MatDialogTitle,
-    ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatSelect,
-    MatOption,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatSuffix,
-    MatDatepicker,
-    MatDialogClose,
-  ],
+  imports: [ReactiveFormsModule, LucideDynamicIcon],
 })
 export class AddEditClientComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clientService = inject(ClientService);
   private liderService = inject(LiderService);
-  private dialogRef = inject<MatDialogRef<AddEditClientComponent>>(MatDialogRef);
-  public data = inject(MAT_DIALOG_DATA);
+  private dialogRef = inject(DialogRef<boolean>);
+  public data = inject(DIALOG_DATA);
 
-  clientForm: FormGroup;
-  maxDate = new Date();
-  paquetes = PAQUETES;
-
+  readonly X = LucideX;
+  readonly paquetes = PAQUETES;
   readonly lideres = this.liderService.lideres;
+  readonly today = new Date().toISOString().split('T')[0];
 
-  constructor() {
-    this.clientForm = this.fb.group({
-      nombre: ['', Validators.required],
-      telefono: ['', Validators.required],
-      lider: ['', Validators.required],
-      paquete: ['', Validators.required],
-      fechaInicio: [new Date(), Validators.required],
-    });
-  }
+  clientForm: FormGroup = this.fb.group({
+    nombre: ['', Validators.required],
+    telefono: ['', Validators.required],
+    lider: ['', Validators.required],
+    paquete: ['', Validators.required],
+    fechaInicio: [this.today, Validators.required],
+  });
 
   ngOnInit(): void {
-    if (this.data && this.data.id) {
-      let fechaInicioDate = new Date();
+    if (this.data?.id) {
+      let fechaInicioStr = this.today;
       if (this.data.fechaInicio) {
-        fechaInicioDate = typeof this.data.fechaInicio === 'string' ? new Date(this.data.fechaInicio) : this.data.fechaInicio;
+        const d = typeof this.data.fechaInicio === 'string' ? new Date(this.data.fechaInicio) : this.data.fechaInicio;
+        if (d instanceof Date && !isNaN(d.getTime())) {
+          fechaInicioStr = d.toISOString().split('T')[0];
+        }
       }
       this.clientForm.patchValue({
         nombre: this.data.nombre || '',
         telefono: this.data.telefono || '',
         lider: this.data.lider || '',
         paquete: this.data.paquete || '',
-        fechaInicio: fechaInicioDate,
+        fechaInicio: fechaInicioStr,
       });
     }
   }
 
+  close() {
+    this.dialogRef.close(false);
+  }
+
   onFormSubmit() {
     if (!this.clientForm.valid) return;
-    const formValue: Client = this.clientForm.value;
+    const formValue: Client = {
+      ...this.clientForm.value,
+      fechaInicio: this.clientForm.value.fechaInicio ? new Date(this.clientForm.value.fechaInicio) : null,
+    };
 
     if (this.data?.id) {
       this.clientService.updateClient(this.data.id, formValue)

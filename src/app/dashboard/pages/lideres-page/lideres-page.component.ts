@@ -1,34 +1,23 @@
-import { Component, effect, inject, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
-import { Lider } from 'src/app/interfaces/lider.interface';
-import { LiderService } from '../../services/lider.service';
+import { Component, inject } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { AddEditLiderComponent } from './components/add-edit-lideres/add-edit-lideres.component';
 import { LideresTableComponent } from './components/lideres-table/lideres-table.component';
 
 @Component({
   selector: 'app-lideres-page',
   templateUrl: './lideres-page.component.html',
-  styleUrls: ['./lideres-page.component.css'],
-  imports: [MatButton, LideresTableComponent],
+  imports: [LideresTableComponent, LucideDynamicIcon],
 })
 export class LideresPageComponent {
-  displayedColumns: string[] = ['nombre', 'apellido', 'editar'];
+  private dialog = inject(Dialog);
 
-  private liderService = inject(LiderService);
-  private dialog = inject(MatDialog);
-
-  readonly liderData = signal<Lider[]>([]);
-
-  constructor() {
-    effect(() => {
-      this.liderData.set(this.liderService.lideres());
-    });
-  }
+  readonly Plus = LucidePlus;
 
   openAddForm() {
     this.dialog.open(AddEditLiderComponent, {
       panelClass: 'custom-dialog-container',
+      backdropClass: 'cdk-overlay-dark-backdrop',
     });
   }
 }

@@ -1,27 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { LucideDynamicIcon, LucideUsers, LucideGem, LucideLogOut, LucideMenu, LucideX } from '@lucide/angular';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
-    selector: 'app-navbar',
-    templateUrl: './navbar.component.html',
-    styleUrls: ['./navbar.component.css'],
-    imports: [RouterLink, RouterOutlet]
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, LucideDynamicIcon],
 })
 export class NavbarComponent {
-  isSidebarOpen = false; // Boolean flag to track sidebar state
+  private authService = inject(AuthService);
 
-  constructor(
-    private _authService: AuthService
-  ) { }
+  readonly Users = LucideUsers;
+  readonly Gem = LucideGem;
+  readonly LogOut = LucideLogOut;
+  readonly Menu = LucideMenu;
+  readonly X = LucideX;
 
+  isOpen = signal(false);
 
-  logOut() {
-    this._authService.logOut();
+  toggle() {
+    this.isOpen.update((v) => !v);
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-    document.getElementById('sidebar')?.classList.toggle('expand');
+  close() {
+    this.isOpen.set(false);
+  }
+
+  logOut() {
+    this.authService.logOut();
   }
 }

@@ -1,31 +1,29 @@
-import { Component, Inject, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
+import { Component, inject } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { LucideDynamicIcon, LucideTriangleAlert } from '@lucide/angular';
+
+interface DeleteData {
+  title?: string;
+  name?: string;
+  message?: string;
+}
 
 @Component({
-    selector: 'app-delete',
-    templateUrl: './delete.component.html',
-    styleUrls: ['./delete.component.css'],
-    imports: [MatButton]
+  selector: 'app-delete',
+  templateUrl: './delete.component.html',
+  imports: [LucideDynamicIcon],
 })
 export class DeleteComponent {
-  nombre !: string;
-  apellido !: string;
+  readonly TriangleAlert = LucideTriangleAlert;
 
-  private dialogRef = inject( MatDialogRef<DeleteComponent> )
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) data: any
-  ) {
-    this.nombre = data.name
-  }
+  readonly data = inject<DeleteData>(DIALOG_DATA);
+  private dialogRef = inject(DialogRef<boolean>);
 
   close() {
-    this.dialogRef.close()
+    this.dialogRef.close(false);
   }
 
   delete() {
-    const deleteObject = true;
-    this.dialogRef.close( deleteObject )
+    this.dialogRef.close(true);
   }
 }

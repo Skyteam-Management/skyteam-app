@@ -1,33 +1,54 @@
-<div mat-dialog-title>
-  <h1>{{data ? 'Editar': 'Agregar'}} Patrocinador</h1>
+<div class="w-full max-w-md rounded-lg border border-(--color-border) bg-(--color-card) shadow-2xl">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-(--color-border)">
+    <h2 class="text-base font-semibold">{{ data?.id ? 'Editar' : 'Agregar' }} patrocinador</h2>
+    <button
+      type="button"
+      (click)="close()"
+      aria-label="Cerrar"
+      class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+    >
+      <svg lucideIcon [lucideIcon]="X" class="size-4"></svg>
+    </button>
+  </div>
+
+  <form [formGroup]="liderForm" (ngSubmit)="onFormSubmit()" class="px-6 py-5 flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label for="lider-nombre" class="text-sm font-medium">Nombre</label>
+      <input
+        id="lider-nombre"
+        type="text"
+        formControlName="nombre"
+        placeholder="Nombre del patrocinador"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="lider-apellido" class="text-sm font-medium">Apellido</label>
+      <input
+        id="lider-apellido"
+        type="text"
+        formControlName="apellido"
+        placeholder="Apellido del patrocinador"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <div class="flex items-center justify-end gap-2 pt-2 border-t border-(--color-border) -mx-6 px-6 mt-2">
+      <button
+        type="button"
+        (click)="close()"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md border border-(--color-border) bg-transparent text-sm font-medium hover:bg-(--color-accent) transition-colors"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="!liderForm.valid"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+      >
+        {{ data?.id ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
 </div>
-<form [formGroup]="liderForm" (ngSubmit)="onFormSubmit()">
-  <div class="content">
-    <div class="row">
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="nombre" type="text" placeholder="Nombre del Patrocinador">
-        </mat-form-field>
-      </div>
-
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Apellido</mat-label>
-          <input matInput formControlName="apellido" type="text" placeholder="Apellido del Patrocinador">
-        </mat-form-field>
-      </div>
-
-    </div>
-
-  </div>
-  <div class="content mb-4">
-    <div class="d-flex justify-content-center">
-      <button [disabled]="!liderForm.valid" class="btn btn-outline-light" type="submit">{{data ? 'Actualizar':
-        'Guardar'}}
-      </button>
-      <button class="buton btn  btn-danger" type="button" [mat-dialog-close]="false">Cancelar
-      </button>
-    </div>
-  </div>
-</form>

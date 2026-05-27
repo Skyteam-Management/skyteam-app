@@ -1,120 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
 
-:root {
-  --blanco: #ffffff;
-  --negro: #150e16;
-  --morado: #4B0C5D;
-  --azul: #1D2B72;
-  --azulOscuro: #131C49;
-  --gris: #737CA8;
-  --sombra: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+@theme {
+  --color-background: oklch(0.145 0 0);
+  --color-foreground: oklch(0.985 0 0);
+  --color-card: oklch(0.205 0 0);
+  --color-card-foreground: oklch(0.985 0 0);
+  --color-muted: oklch(0.269 0 0);
+  --color-muted-foreground: oklch(0.708 0 0);
+  --color-border: oklch(1 0 0 / 10%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: oklch(0.556 0 0);
+  --color-primary: oklch(0.985 0 0);
+  --color-primary-foreground: oklch(0.205 0 0);
+  --color-accent: oklch(0.269 0 0);
+  --color-accent-foreground: oklch(0.985 0 0);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.985 0 0);
+  --color-success: oklch(0.696 0.17 162.48);
+  --color-success-foreground: oklch(0.145 0 0);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-html,
-body {
-  height: 100vh;
-  color: var(--blanco);
-}
-
-body {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
-  background-color: var(--azul);
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-.bg-negro {
-  background-color: var(--negro) !important;
-}
-
-.centrar {
+html, body {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-.titulo {
-  font-size: 3em;
+/* CDK overlay container needs to live above everything */
+.cdk-overlay-container {
+  z-index: 1000;
 }
 
-.contenedor {
-  margin: 3em 3em 3em 3em;
-}
-
-.contenedor-adm {
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-
- 
-
- 
-}
-
-
-.setting {
-  display: flex;
-}
-
-button {
-  width: 100%;
-}
-/* TABLA */
-
-.mat-mdc-table {
-  background-color: var(--azulOscuro) !important;
-}
-
-.mat-mdc-paginator {
-  background-color: var(--azulOscuro) !important;
-}
-td, th {
-  width: max-content;
-}
-
-table td {
-  text-transform: capitalize !important;
-}
-
-
-table {
-  width: 100%;
-}
-
-@media screen and (max-width: 800px) {
-  .mat-elevation-z8 {
-    overflow-x: auto;
-  }
-}
-
-mat-paginator {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-/* SWAL */
-
-.confirm-button-class {
-  background-color: var(--morado) !important;
-  box-shadow: none !important;
-  outline: none !important;
+/* SweetAlert2 overrides (legacy class names kept for AuthService) */
+.bg-negro {
+  background-color: var(--color-card) !important;
+  color: var(--color-foreground) !important;
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--color-border) !important;
 }
 
 .texto-blanco {
-  color: var(--blanco) !important;
+  color: var(--color-foreground) !important;
 }
 
-/* DIALOG */
-
-.custom-dialog-container {
-  background-color: var(--azulOscuro) !important;
+.confirm-button-class {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
 }

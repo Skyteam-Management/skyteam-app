@@ -1,61 +1,57 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
+import { LucideDynamicIcon, LucideX } from '@lucide/angular';
+import Swal from 'sweetalert2';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
-import Swal from 'sweetalert2';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
 
 @Component({
-    selector: 'app-add-edit-lider',
-    templateUrl: './add-edit-lideres.component.html',
-    styleUrls: ['./add-edit-lideres.component.css'],
-    imports: [MatDialogTitle, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatDialogClose]
+  selector: 'app-add-edit-lider',
+  templateUrl: './add-edit-lideres.component.html',
+  imports: [ReactiveFormsModule, LucideDynamicIcon],
 })
 export class AddEditLiderComponent {
-  liderForm: FormGroup;
-  maxDate = new Date();
+  private fb = inject(FormBuilder);
+  private liderService = inject(LiderService);
+  private dialogRef = inject(DialogRef<boolean>);
+  public data = inject(DIALOG_DATA);
 
-  constructor(
-    private fb: FormBuilder,
-    private liderService: LiderService,
-    private dialogRef: MatDialogRef<AddEditLiderComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
-    this.liderForm = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-    });
+  readonly X = LucideX;
 
-    if (this.data && this.data.id) {
+  liderForm: FormGroup = this.fb.group({
+    nombre: ['', Validators.required],
+    apellido: ['', Validators.required],
+  });
+
+  constructor() {
+    if (this.data?.id) {
       this.liderForm.patchValue(this.data);
     }
   }
 
+  close() {
+    this.dialogRef.close(false);
+  }
+
   onFormSubmit() {
-    if (this.liderForm.valid) {
-      if (this.data) {
-        const updateLider: Lider = this.liderForm.value;
-        this.liderService.updateLider(this.data.id, updateLider)
-          .then((val: any) => {
-            Swal.fire('Éxito', `Líder: ${updateLider.nombre} actualizado correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
-          });
-      } else {
-        const newLider: Lider = this.liderForm.value;
-        this.liderService.addLider(newLider)
-          .then((val: any) => {
-            Swal.fire('Éxito', `Líder: ${newLider.nombre} añadido correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
-          });
-      }
+    if (!this.liderForm.valid) return;
+    const formValue: Lider = this.liderForm.value;
+
+    if (this.data?.id) {
+      this.liderService.updateLider(this.data.id, formValue)
+        .then(() => {
+          Swal.fire('Éxito', `Patrocinador: ${formValue.nombre} actualizado correctamente`, 'success');
+          this.dialogRef.close(true);
+        })
+        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+    } else {
+      this.liderService.addLider(formValue)
+        .then(() => {
+          Swal.fire('Éxito', `Patrocinador: ${formValue.nombre} añadido correctamente`, 'success');
+          this.dialogRef.close(true);
+        })
+        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
     }
   }
 }

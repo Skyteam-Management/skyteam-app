@@ -1,73 +1,96 @@
-<div mat-dialog-title>
-  <h1>{{data ? 'Editar': 'Agregar'}} Cliente</h1>
+<div class="w-full max-w-lg rounded-lg border border-(--color-border) bg-(--color-card) shadow-2xl">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-(--color-border)">
+    <h2 class="text-base font-semibold">{{ data?.id ? 'Editar' : 'Agregar' }} cliente</h2>
+    <button
+      type="button"
+      (click)="close()"
+      aria-label="Cerrar"
+      class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+    >
+      <svg lucideIcon [lucideIcon]="X" class="size-4"></svg>
+    </button>
+  </div>
+
+  <form [formGroup]="clientForm" (ngSubmit)="onFormSubmit()" class="px-6 py-5 flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label for="nombre" class="text-sm font-medium">Nombre completo</label>
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+        placeholder="Nombre del cliente"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="telefono" class="text-sm font-medium">Teléfono</label>
+      <input
+        id="telefono"
+        type="tel"
+        formControlName="telefono"
+        placeholder="Teléfono del cliente"
+        maxlength="20"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="paquete" class="text-sm font-medium">Paquete</label>
+        <select
+          id="paquete"
+          formControlName="paquete"
+          class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        >
+          <option value="" disabled>Selecciona uno</option>
+          @for (paquete of paquetes; track paquete.id) {
+            <option [value]="paquete.id">{{ paquete.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="lider" class="text-sm font-medium">Patrocinador</label>
+        <select
+          id="lider"
+          formControlName="lider"
+          class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        >
+          <option value="" disabled>Selecciona uno</option>
+          @for (lider of lideres(); track lider.id) {
+            <option [value]="lider.id">{{ lider.nombre }} {{ lider.apellido }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="fechaInicio" class="text-sm font-medium">Fecha de pago</label>
+      <input
+        id="fechaInicio"
+        type="date"
+        formControlName="fechaInicio"
+        [max]="today"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring) [color-scheme:dark]"
+      />
+    </div>
+
+    <div class="flex items-center justify-end gap-2 pt-2 border-t border-(--color-border) -mx-6 px-6 mt-2">
+      <button
+        type="button"
+        (click)="close()"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md border border-(--color-border) bg-transparent text-sm font-medium hover:bg-(--color-accent) transition-colors"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="!clientForm.valid"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+      >
+        {{ data?.id ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
 </div>
-<form [formGroup]="clientForm" (ngSubmit)="onFormSubmit()">
-  <div class="content">
-    <div class="row">
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Nombre Completo</mat-label>
-          <input matInput formControlName="nombre" type="text" placeholder="Nombre del Cliente">
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="telefono" type="tel" placeholder="Teléfono del Cliente" maxlength="20">
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Paquete</mat-label>
-          <mat-select formControlName="paquete">
-            @for (paquete of paquetes; track paquete) {
-              <mat-option [value]="paquete?.id">
-                {{paquete?.nombre}}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Líder</mat-label>
-          <mat-select formControlName="lider">
-            @for (lider of lideres(); track lider.id) {
-              <mat-option [value]="lider.id">
-                {{lider.nombre }} {{lider.apellido}}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="col">
-        <mat-form-field appearance="outline">
-          <mat-label>Fecha de Pago</mat-label>
-          <input matInput formControlName="fechaInicio" [matDatepicker]="picker" [max]="maxDate">
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
-    </div>
-
-  </div>
-  <div class="content mb-4">
-    <div class="d-flex justify-content-center">
-      <button [disabled]="!clientForm.valid" class="btn btn-outline-light" type="submit">{{data ? 'Actualizar':
-        'Guardar'}}
-      </button>
-      <button class="buton btn  btn-danger" type="button" [mat-dialog-close]="false">Cancelar
-      </button>
-    </div>
-  </div>
-</form>

@@ -1,35 +1,71 @@
-<div class="wrapper">
-    <aside id="sidebar">
-        <div class="d-flex">
-            <button class="toggle-btn" type="button" (click)="toggleSidebar()">
-                <i class="lni lni-grid-alt"></i>
-            </button>
-            <div class="sidebar-logo">
-                <a routerLink="/dashboard">Abundant Virtual Money</a>
-            </div>
-        </div>
-        <ul class="sidebar-nav">
-            <li class="sidebar-item">
-                <a routerLink="/dashboard/clientes" class="sidebar-link">
-                    <i class="lni lni-users"></i>
-                    <span>Clientes</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
-                <a routerLink="/dashboard/patrocinadores" class="sidebar-link">
-                    <i class="lni lni-sketch"></i>
-                    <span>Patrocinadores</span>
-                </a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
-            <a (click)="logOut()" class="sidebar-link">
-                <i class="lni lni-exit"></i>
-                <span>Salir</span>
-            </a>
-        </div>
-    </aside>
-    <div class="main">
-        <router-outlet></router-outlet>
+<div class="min-h-screen flex">
+  @if (isOpen()) {
+    <div
+      (click)="close()"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
+      aria-hidden="true"
+    ></div>
+  }
+
+  <aside
+    class="fixed lg:sticky top-0 left-0 z-40 h-screen w-64 shrink-0 border-r border-(--color-border) bg-(--color-card) flex flex-col transition-transform duration-200 ease-out lg:translate-x-0"
+    [class.translate-x-0]="isOpen()"
+    [class.-translate-x-full]="!isOpen()"
+  >
+    <div class="h-14 flex items-center px-4 border-b border-(--color-border)">
+      <a routerLink="/dashboard" class="text-sm font-semibold tracking-tight truncate" (click)="close()">
+        Abundant Virtual Money
+      </a>
     </div>
+
+    <nav class="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
+      <a
+        routerLink="/dashboard/clientes"
+        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
+        (click)="close()"
+        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
+      >
+        <svg lucideIcon [lucideIcon]="Users" class="size-4"></svg>
+        <span>Clientes</span>
+      </a>
+      <a
+        routerLink="/dashboard/patrocinadores"
+        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
+        (click)="close()"
+        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
+      >
+        <svg lucideIcon [lucideIcon]="Gem" class="size-4"></svg>
+        <span>Patrocinadores</span>
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-(--color-border)">
+      <button
+        type="button"
+        (click)="logOut()"
+        class="w-full inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+      >
+        <svg lucideIcon [lucideIcon]="LogOut" class="size-4"></svg>
+        <span>Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0 flex flex-col">
+    <header class="lg:hidden sticky top-0 z-20 h-14 border-b border-(--color-border) bg-(--color-background)/80 backdrop-blur flex items-center px-4 gap-3">
+      <button
+        type="button"
+        (click)="toggle()"
+        [attr.aria-label]="isOpen() ? 'Cerrar menú' : 'Abrir menú'"
+        class="inline-flex items-center justify-center size-9 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground)"
+      >
+        <svg lucideIcon [lucideIcon]="isOpen() ? X : Menu" class="size-5"></svg>
+      </button>
+      <span class="text-sm font-semibold tracking-tight truncate">Abundant Virtual Money</span>
+    </header>
+
+    <main class="flex-1 p-6 lg:p-10">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>

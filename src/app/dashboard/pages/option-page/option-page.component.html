@@ -1,10 +1,36 @@
-<div class="centrar">
-  <div class="box bg-negro" routerLink="/dashboard/clientes">
-    <span>Clientes</span>
-    <i class="lni lni-users"></i>
+<div class="max-w-4xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold tracking-tight">Panel</h1>
+    <p class="text-sm text-(--color-muted-foreground) mt-1">Selecciona una sección para empezar.</p>
   </div>
-  <div class="box bg-negro" routerLink="/dashboard/patrocinadores">
-    <span>Patrocinadores</span>
-    <i class="lni lni-sketch"></i>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <a
+      routerLink="/dashboard/clientes"
+      class="group block rounded-lg border border-(--color-border) bg-(--color-card) p-6 hover:border-(--color-ring) transition-colors"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div class="inline-flex items-center justify-center size-10 rounded-md bg-(--color-accent) text-(--color-accent-foreground)">
+          <svg lucideIcon [lucideIcon]="Users" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-foreground) group-hover:translate-x-0.5 transition-all"></svg>
+      </div>
+      <h2 class="text-base font-semibold">Clientes</h2>
+      <p class="text-sm text-(--color-muted-foreground) mt-1">Administra clientes, paquetes y fechas de pago.</p>
+    </a>
+
+    <a
+      routerLink="/dashboard/patrocinadores"
+      class="group block rounded-lg border border-(--color-border) bg-(--color-card) p-6 hover:border-(--color-ring) transition-colors"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div class="inline-flex items-center justify-center size-10 rounded-md bg-(--color-accent) text-(--color-accent-foreground)">
+          <svg lucideIcon [lucideIcon]="Gem" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-foreground) group-hover:translate-x-0.5 transition-all"></svg>
+      </div>
+      <h2 class="text-base font-semibold">Patrocinadores</h2>
+      <p class="text-sm text-(--color-muted-foreground) mt-1">Líderes asociados a clientes.</p>
+    </a>
   </div>
 </div>

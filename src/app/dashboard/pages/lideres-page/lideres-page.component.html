@@ -1,12 +1,18 @@
-<div class="contenedor">
-  <span class="titulo">Patrocinadores</span>
-  <div class="contenedor-adm">
-    <div class="setting">
-      <button (click)="openAddForm()" mat-raised-button color="primary">Añadir Patrocinador</button>
+<div class="flex flex-col gap-6">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Patrocinadores</h1>
+      <p class="text-sm text-(--color-muted-foreground) mt-1">Líderes registrados en el sistema.</p>
     </div>
-    <div class="tabla">
-      <app-lideres-table></app-lideres-table>
-    </div>
-
+    <button
+      type="button"
+      (click)="openAddForm()"
+      class="inline-flex items-center gap-2 h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity"
+    >
+      <svg lucideIcon [lucideIcon]="Plus" class="size-4"></svg>
+      Añadir patrocinador
+    </button>
   </div>
+
+  <app-lideres-table />
 </div>
