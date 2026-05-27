@@ -7,11 +7,12 @@ import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
+import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 
 @Component({
   selector: 'app-add-edit-clientes',
   templateUrl: './add-edit-clientes.component.html',
-  imports: [ReactiveFormsModule, LucideDynamicIcon],
+  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective],
 })
 export class AddEditClientComponent implements OnInit {
   private fb = inject(FormBuilder);

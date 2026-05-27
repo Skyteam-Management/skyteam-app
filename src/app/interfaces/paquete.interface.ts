@@ -3,5 +3,4 @@ export interface Paquete {
   nombre: string;
   dias: number;
   activo?: boolean;
-  orden?: number | null;
 }

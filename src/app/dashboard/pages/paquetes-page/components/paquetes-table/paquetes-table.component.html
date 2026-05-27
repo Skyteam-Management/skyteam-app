@@ -1,0 +1,131 @@
+<div class="flex flex-col gap-4">
+  <div class="relative max-w-sm w-full">
+    <svg lucideIcon [lucideIcon]="Search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-(--color-muted-foreground)"></svg>
+    <input
+      type="search"
+      [value]="filter()"
+      (input)="onFilterChange($event)"
+      placeholder="Busca por nombre..."
+      class="w-full h-10 rounded-md border border-(--color-border) bg-(--color-input) pl-10 pr-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+    />
+  </div>
+
+  <div class="rounded-lg border border-(--color-border) bg-(--color-card) overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-(--color-border) bg-(--color-background)/40">
+          <tr>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+                Nombre
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'nombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('dias')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+                Días
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'dias' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('enUso')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+                Clientes
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'enUso' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('activo')" class="inline-flex items-center gap-1.5 hover:text-(--color-foreground) text-(--color-muted-foreground)">
+                Estado
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'activo' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-right font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of paged(); track row.id) {
+            <tr class="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-background)/40 transition-colors">
+              <td class="px-4 py-3">{{ row.nombre }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground) tabular-nums">{{ row.dias }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground) tabular-nums">{{ row.enUso }}</td>
+              <td class="px-4 py-3">
+                @if (row.activo === false) {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-muted) text-(--color-muted-foreground)">Inactivo</span>
+                } @else {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-success)/15 text-(--color-success)">Activo</span>
+                }
+              </td>
+              <td class="px-4 py-3 text-right whitespace-nowrap">
+                <button
+                  type="button"
+                  (click)="openEditForm(row)"
+                  aria-label="Editar paquete"
+                  class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+                >
+                  <svg lucideIcon [lucideIcon]="Pencil" class="size-4"></svg>
+                </button>
+                <button
+                  type="button"
+                  (click)="deletePaquete(row)"
+                  aria-label="Eliminar paquete"
+                  class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-destructive)/15 hover:text-(--color-destructive) transition-colors"
+                >
+                  <svg lucideIcon [lucideIcon]="Trash2" class="size-4"></svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-4 py-12 text-center text-sm text-(--color-muted-foreground)">
+                @if (filter()) {
+                  No hay resultados para "{{ filter() }}"
+                } @else {
+                  Aún no hay paquetes registrados.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 px-4 py-3 border-t border-(--color-border) flex-wrap">
+      <div class="flex items-center gap-2 text-sm text-(--color-muted-foreground)">
+        <span>Filas por página</span>
+        <select
+          [value]="pageSize()"
+          (change)="changePageSize($event)"
+          class="h-8 rounded-md border border-(--color-border) bg-(--color-input) px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        >
+          @for (n of pageSizeOptions; track n) {
+            <option [value]="n">{{ n }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm text-(--color-muted-foreground)">
+        <span>{{ pageStart() }}–{{ pageEnd() }} de {{ totalRows() }}</span>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            (click)="prevPage()"
+            [disabled]="page() === 0"
+            aria-label="Página anterior"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-(--color-border) bg-transparent hover:bg-(--color-accent) disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="ChevronLeft" class="size-4"></svg>
+          </button>
+          <button
+            type="button"
+            (click)="nextPage()"
+            [disabled]="page() >= totalPages() - 1"
+            aria-label="Página siguiente"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-(--color-border) bg-transparent hover:bg-(--color-accent) disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="ChevronRight" class="size-4"></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

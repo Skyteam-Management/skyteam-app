@@ -4,7 +4,7 @@
     <p class="text-sm text-(--color-muted-foreground) mt-1">Selecciona una sección para empezar.</p>
   </div>
 
-  <div class="grid gap-4 sm:grid-cols-2">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <a
       routerLink="/dashboard/clientes"
       class="group block rounded-lg border border-(--color-border) bg-(--color-card) p-6 hover:border-(--color-ring) transition-colors"
@@ -31,6 +31,20 @@
       </div>
       <h2 class="text-base font-semibold">Patrocinadores</h2>
       <p class="text-sm text-(--color-muted-foreground) mt-1">Líderes asociados a clientes.</p>
+    </a>
+
+    <a
+      routerLink="/dashboard/paquetes"
+      class="group block rounded-lg border border-(--color-border) bg-(--color-card) p-6 hover:border-(--color-ring) transition-colors"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div class="inline-flex items-center justify-center size-10 rounded-md bg-(--color-accent) text-(--color-accent-foreground)">
+          <svg lucideIcon [lucideIcon]="Package" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-foreground) group-hover:translate-x-0.5 transition-all"></svg>
+      </div>
+      <h2 class="text-base font-semibold">Paquetes</h2>
+      <p class="text-sm text-(--color-muted-foreground) mt-1">Catálogo de paquetes y duraciones.</p>
     </a>
   </div>
 </div>

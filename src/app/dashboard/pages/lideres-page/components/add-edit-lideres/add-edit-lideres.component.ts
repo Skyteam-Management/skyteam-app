@@ -5,11 +5,12 @@ import { LucideDynamicIcon, LucideX } from '@lucide/angular';
 import Swal from 'sweetalert2';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
+import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 
 @Component({
   selector: 'app-add-edit-lider',
   templateUrl: './add-edit-lideres.component.html',
-  imports: [ReactiveFormsModule, LucideDynamicIcon],
+  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective],
 })
 export class AddEditLiderComponent {
   private fb = inject(FormBuilder);

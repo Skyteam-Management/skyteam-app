@@ -1,6 +1,6 @@
 <div class="w-full max-w-md rounded-lg border border-(--color-border) bg-(--color-card) shadow-2xl">
   <div class="flex items-center justify-between px-6 py-4 border-b border-(--color-border)">
-    <h2 class="text-base font-semibold">{{ data?.id ? 'Editar' : 'Agregar' }} patrocinador</h2>
+    <h2 class="text-base font-semibold">{{ data?.id ? 'Editar' : 'Agregar' }} paquete</h2>
     <button
       type="button"
       (click)="close()"
@@ -11,30 +11,38 @@
     </button>
   </div>
 
-  <form [formGroup]="liderForm" (ngSubmit)="onFormSubmit()" class="px-6 py-5 flex flex-col gap-4">
+  <form [formGroup]="paqueteForm" (ngSubmit)="onFormSubmit()" class="px-6 py-5 flex flex-col gap-4">
     <div class="flex flex-col gap-1.5">
-      <label for="lider-nombre" class="text-sm font-medium">Nombre</label>
+      <label for="paquete-nombre" class="text-sm font-medium">Nombre</label>
       <input
-        id="lider-nombre"
+        id="paquete-nombre"
         type="text"
         formControlName="nombre"
         appUppercase
-        placeholder="NOMBRE DEL PATROCINADOR"
+        placeholder="EJ. 6 MESES"
         class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
       />
     </div>
 
     <div class="flex flex-col gap-1.5">
-      <label for="lider-apellido" class="text-sm font-medium">Apellido</label>
+      <label for="paquete-dias" class="text-sm font-medium">Duración (días)</label>
       <input
-        id="lider-apellido"
-        type="text"
-        formControlName="apellido"
-        appUppercase
-        placeholder="APELLIDO DEL PATROCINADOR"
-        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        id="paquete-dias"
+        type="number"
+        min="1"
+        formControlName="dias"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
       />
     </div>
+
+    <label class="inline-flex items-center gap-2 select-none">
+      <input
+        type="checkbox"
+        formControlName="activo"
+        class="size-4 rounded border-(--color-border) bg-(--color-input) accent-(--color-primary)"
+      />
+      <span class="text-sm">Activo <span class="text-(--color-muted-foreground)">— disponible al crear o editar clientes</span></span>
+    </label>
 
     <div class="flex items-center justify-end gap-2 pt-2 border-t border-(--color-border) -mx-6 px-6 mt-2">
       <button
@@ -46,7 +54,7 @@
       </button>
       <button
         type="submit"
-        [class.opacity-50]="!liderForm.valid"
+        [class.opacity-50]="!paqueteForm.valid"
         class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity"
       >
         {{ data?.id ? 'Actualizar' : 'Guardar' }}

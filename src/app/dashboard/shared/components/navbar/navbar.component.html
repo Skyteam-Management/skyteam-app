@@ -37,6 +37,15 @@
         <svg lucideIcon [lucideIcon]="Gem" class="size-4"></svg>
         <span>Patrocinadores</span>
       </a>
+      <a
+        routerLink="/dashboard/paquetes"
+        routerLinkActive="bg-(--color-accent) text-(--color-accent-foreground)"
+        (click)="close()"
+        class="inline-flex items-center gap-3 h-9 px-3 rounded-md text-sm text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-accent-foreground) transition-colors"
+      >
+        <svg lucideIcon [lucideIcon]="Package" class="size-4"></svg>
+        <span>Paquetes</span>
+      </a>
     </nav>
 
     <div class="p-3 border-t border-(--color-border)">

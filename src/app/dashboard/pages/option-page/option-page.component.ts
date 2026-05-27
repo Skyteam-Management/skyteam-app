@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideDynamicIcon, LucideUsers, LucideGem, LucideArrowRight } from '@lucide/angular';
+import { LucideDynamicIcon, LucideUsers, LucideGem, LucidePackage, LucideArrowRight } from '@lucide/angular';
 
 @Component({
   selector: 'app-option-page',
@@ -10,5 +10,6 @@ import { LucideDynamicIcon, LucideUsers, LucideGem, LucideArrowRight } from '@lu
 export class OptionPageComponent {
   readonly Users = LucideUsers;
   readonly Gem = LucideGem;
+  readonly Package = LucidePackage;
   readonly ArrowRight = LucideArrowRight;
 }

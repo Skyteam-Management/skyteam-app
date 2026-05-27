@@ -13,7 +13,6 @@ create table if not exists paquetes (
   nombre      text not null unique,
   dias        integer not null check (dias > 0),
   activo      boolean not null default true,
-  orden       integer,
   created_at  timestamptz not null default now()
 );
 
@@ -31,21 +30,21 @@ create index if not exists idx_clientes_lider   on clientes(lider);
 create index if not exists idx_clientes_paquete on clientes(paquete);
 
 -- Default catalog
-insert into paquetes (id, nombre, dias, orden) values
-  ('13', '8 DÍAS',     8,   1),
-  ('14', '15 DÍAS',    15,  2),
-  ('5',  '1 MES',      31,  3),
-  ('12', '2 MESES',    60,  4),
-  ('4',  '3 MESES',    91,  5),
-  ('11', '4 MESES',    121, 6),
-  ('10', '5 MESES',    151, 7),
-  ('3',  '6 MESES',    182, 8),
-  ('9',  '7 MESES',    212, 9),
-  ('8',  '8 MESES',    243, 10),
-  ('2',  '9 MESES',    273, 11),
-  ('7',  '10 MESES',   304, 12),
-  ('6',  '11 MESES',   334, 13),
-  ('1',  '12 MESES',   365, 14)
+insert into paquetes (id, nombre, dias) values
+  ('13', '8 DÍAS',   8),
+  ('14', '15 DÍAS',  15),
+  ('5',  '1 MES',    31),
+  ('12', '2 MESES',  60),
+  ('4',  '3 MESES',  91),
+  ('11', '4 MESES',  121),
+  ('10', '5 MESES',  151),
+  ('3',  '6 MESES',  182),
+  ('9',  '7 MESES',  212),
+  ('8',  '8 MESES',  243),
+  ('2',  '9 MESES',  273),
+  ('7',  '10 MESES', 304),
+  ('6',  '11 MESES', 334),
+  ('1',  '12 MESES', 365)
 on conflict (id) do nothing;
 
 -- RLS
@@ -96,3 +95,39 @@ left join paquetes p on p.id = c.paquete
 left join lideres  l on l.id = c.lider;
 
 alter view clientes_view set (security_invoker = true);
+
+-- Auto-upper case all name/text fields on insert/update so the DB is the source
+-- of truth for normalization (matches the appUppercase directive in the UI).
+create or replace function uppercase_lideres() returns trigger as $$
+begin
+  new.nombre   := upper(new.nombre);
+  new.apellido := upper(new.apellido);
+  return new;
+end$$ language plpgsql;
+
+create or replace function uppercase_paquetes() returns trigger as $$
+begin
+  new.nombre := upper(new.nombre);
+  return new;
+end$$ language plpgsql;
+
+create or replace function uppercase_clientes() returns trigger as $$
+begin
+  new.nombre := upper(new.nombre);
+  if new.telefono is not null then
+    new.telefono := upper(new.telefono);
+  end if;
+  return new;
+end$$ language plpgsql;
+
+create trigger trg_uppercase_lideres
+  before insert or update on lideres
+  for each row execute function uppercase_lideres();
+
+create trigger trg_uppercase_paquetes
+  before insert or update on paquetes
+  for each row execute function uppercase_paquetes();
+
+create trigger trg_uppercase_clientes
+  before insert or update on clientes
+  for each row execute function uppercase_clientes();

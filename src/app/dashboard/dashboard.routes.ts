@@ -3,6 +3,7 @@ import { DashboardLayoutComponent } from './layout/dashboard-layout/dashboard-la
 import { OptionPageComponent } from './pages/option-page/option-page.component';
 import { ClientesPageComponent } from './pages/clientes-page/clientes-page.component';
 import { LideresPageComponent } from './pages/lideres-page/lideres-page.component';
+import { PaquetesPageComponent } from './pages/paquetes-page/paquetes-page.component';
 
 export const DASHBOARD_ROUTES: Routes = [
   {
@@ -12,6 +13,7 @@ export const DASHBOARD_ROUTES: Routes = [
       { path: 'opciones', component: OptionPageComponent },
       { path: 'clientes', component: ClientesPageComponent },
       { path: 'patrocinadores', component: LideresPageComponent },
+      { path: 'paquetes', component: PaquetesPageComponent },
       { path: '**', redirectTo: 'opciones' },
     ],
   },

@@ -38,8 +38,7 @@ export class PaqueteService {
     const { data, error } = await this.supabase.client
       .from('paquetes')
       .select('*')
-      .order('orden', { ascending: true, nullsFirst: false })
-      .order('dias', { ascending: true });
+      .order('dias', { ascending: false });
     if (error) {
       console.error('paquetes refresh failed', error);
       return;
