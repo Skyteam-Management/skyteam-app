@@ -1,59 +1,56 @@
-import { Injectable, NgZone, computed, signal } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { User } from '@supabase/supabase-js';
+import { BehaviorSubject, Observable, filter } from 'rxjs';
 import Swal from 'sweetalert2';
-import { FirebaseCodeErrorService } from './firebase-code-error.service';
-import { AuthStatus, User } from '../interfaces';
-import { Observable, of, switchMap } from 'rxjs';
+import { SupabaseService } from '../../services/supabase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-
-  user$: Observable<any>;
+  private _user$ = new BehaviorSubject<User | null | undefined>(undefined);
+  user$: Observable<User | null> = this._user$.asObservable().pipe(
+    filter((v): v is User | null => v !== undefined),
+  );
 
   constructor(
-    private fireAuth: AngularFireAuth,
-    private afs: AngularFirestore,
+    private supabase: SupabaseService,
     private router: Router,
-    private ngZone: NgZone,
-    private _firebaseError: FirebaseCodeErrorService
   ) {
-    this.user$ = this.fireAuth.authState.pipe(
-      switchMap(user => {
-        if (user) {
-          return of(user);
-        } else {
-          return of(null);
-        }
-      })
-    );
+    this.supabase.client.auth.onAuthStateChange((_event, session) => {
+      this._user$.next(session?.user ?? null);
+    });
   }
 
   async logInWithEmail(email: string, password: string) {
-    try {
-      const userCredential = await this.fireAuth.signInWithEmailAndPassword(email, password);
-      this.router.navigate(['dashboard']);
-      return userCredential;
-    } catch (error: any) {
+    const { data, error } = await this.supabase.client.auth.signInWithPassword({ email, password });
+    if (error) {
       Swal.fire({
         icon: 'error',
-        text: this._firebaseError.codeError(error.code),
+        text: this.translateError(error.message),
         heightAuto: false,
         customClass: {
           confirmButton: 'confirm-button-class',
           popup: 'bg-negro',
-          validationMessage: 'texto-blanco'
-        }
+          validationMessage: 'texto-blanco',
+        },
       });
+      return null;
     }
-    return null; 
+    this.router.navigate(['dashboard']);
+    return data;
   }
 
   async logOut() {
-    await this.fireAuth.signOut();
-    this.router.navigate(['login']);
+    await this.supabase.client.auth.signOut();
+    this.router.navigate(['/auth/login']);
+  }
+
+  private translateError(message: string): string {
+    const m = message.toLowerCase();
+    if (m.includes('invalid login credentials')) return 'Email o contraseña incorrectos';
+    if (m.includes('email not confirmed')) return 'Email no confirmado';
+    if (m.includes('user not found')) return 'Usuario no encontrado';
+    if (m.includes('too many requests')) return 'Demasiados intentos, espera un momento';
+    return message;
   }
 }

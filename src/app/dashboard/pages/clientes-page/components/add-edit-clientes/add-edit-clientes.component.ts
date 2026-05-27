@@ -85,7 +85,7 @@ export class AddEditClientComponent implements OnInit {
             this.dialogRef.close(true);
           })
           .catch((err: any) => {
-            Swal.fire('Error', err.error.message, 'error');
+            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
           });
       } else {
         const newClient: Client = this.clientForm.value;
@@ -95,7 +95,7 @@ export class AddEditClientComponent implements OnInit {
             this.dialogRef.close(true);
           })
           .catch((err: any) => {
-            Swal.fire('Error', err.error.message, 'error');
+            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
           });
       }
     }

@@ -33,13 +33,6 @@ export class ClientesPageComponent {
         ...client,
         fechaInicio: client.fechaInicio ? this.timestampToDate(client.fechaInicio) : null
       }));
-      // Trigger change detection after updating clientData
-      this.cdr.detectChanges();
-      if (this.clientData.length > 0) {
-        console.log('Hay datos de clientes:', this.clientData);
-      } else {
-        console.log('No hay datos de clientes');
-      }
     });
   }
 

@@ -5,5 +5,5 @@ export interface Client {
   lider: string;
   liderNombre?: string;
   paquete: string;
-  fechaInicio: string | null;
+  fechaInicio: string | Date | null;
 }

@@ -38,12 +38,6 @@ export class LideresPageComponent {
       this.liderData = lideres.map(lider => ({
         ...lider,
       }));
-      this.cdr.detectChanges();
-      if (this.liderData.length > 0) {
-        console.log('Hay datos de líderes:', this.liderData);
-      } else {
-        console.log('No hay datos de líderes');
-      }
     });
   }
 

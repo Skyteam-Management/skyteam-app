@@ -89,12 +89,12 @@ export class ClientesTableComponent implements OnInit {
   }
 
   getPaqueteName(paqueteId: number): string {
-    const paquete = this.paquetes.find(p => p.id === paqueteId);
+    const paquete = this.paquetes.find(p => String(p.id) === String(paqueteId));
     return paquete ? paquete.nombre : 'Desconocido';
   }
 
   getPaqueteDuration(paqueteId: number): number {
-    const paquete = this.paquetes.find(p => p.id === paqueteId);
+    const paquete = this.paquetes.find(p => String(p.id) === String(paqueteId));
     switch (paquete?.nombre) {
       case '1 MES': return 31;
       case '2 MESES': return 60;
