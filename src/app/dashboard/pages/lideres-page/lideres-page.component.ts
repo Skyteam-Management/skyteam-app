@@ -1,67 +1,34 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { LiderService } from '../../services/lider.service';
-import { DatePipe } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
 import { AddEditLiderComponent } from './components/add-edit-lideres/add-edit-lideres.component';
-import { MatButton } from '@angular/material/button';
 import { LideresTableComponent } from './components/lideres-table/lideres-table.component';
 
 @Component({
-    selector: 'app-lideres-page',
-    templateUrl: './lideres-page.component.html',
-    styleUrls: ['./lideres-page.component.css'],
-    providers: [DatePipe],
-    imports: [MatButton, LideresTableComponent]
+  selector: 'app-lideres-page',
+  templateUrl: './lideres-page.component.html',
+  styleUrls: ['./lideres-page.component.css'],
+  imports: [MatButton, LideresTableComponent],
 })
 export class LideresPageComponent {
-
-  columnNames = {
-    'nombre': 'Nombre',
-    'apellido': 'Apellido',
-    'editar': 'Modificar'
-  };
-
   displayedColumns: string[] = ['nombre', 'apellido', 'editar'];
 
-  liderData: Lider[] = [];
+  private liderService = inject(LiderService);
+  private dialog = inject(MatDialog);
 
-  private dialog = inject(MatDialog)
+  readonly liderData = signal<Lider[]>([]);
 
-  constructor(
-    private _liderService: LiderService,
-    private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef  // Inject ChangeDetectorRef
-  ) {
-    this.loadLiderData();
-  }
-
-  loadLiderData() {
-    this._liderService.getLideres().subscribe(lideres => {
-      this.liderData = lideres.map(lider => ({
-        ...lider,
-      }));
+  constructor() {
+    effect(() => {
+      this.liderData.set(this.liderService.lideres());
     });
-  }
-
-  timestampToDate(timestamp: any): string | null {
-    if (timestamp && timestamp.seconds) {
-      const date = new Date(timestamp.seconds * 1000);
-      return this.datePipe.transform(date, 'MMM d, y') || null;
-    }
-    return null;
   }
 
   openAddForm() {
-    const dialogRef = this.dialog.open(AddEditLiderComponent, {
-      panelClass: 'custom-dialog-container'
-    });
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.loadLiderData();
-        }
-      }
+    this.dialog.open(AddEditLiderComponent, {
+      panelClass: 'custom-dialog-container',
     });
   }
 }

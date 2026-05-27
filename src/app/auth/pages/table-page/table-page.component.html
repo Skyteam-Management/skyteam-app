@@ -34,7 +34,7 @@
 
         <ng-container matColumnDef="lider">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Patrocinador </th>
-          <td mat-cell *matCellDef="let row"> {{getLiderName(row.lider) }} </td>
+          <td mat-cell *matCellDef="let row"> {{ row.liderNombre }} </td>
         </ng-container>
 
         <ng-container matColumnDef="estado">

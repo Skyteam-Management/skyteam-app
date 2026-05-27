@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
 import { Client } from '../../interfaces/client.interface';
 import { SupabaseService } from '../../services/supabase.service';
 
@@ -14,14 +13,13 @@ interface ClienteRow {
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
-  private clients$ = new BehaviorSubject<Client[]>([]);
+  private supabase = inject(SupabaseService);
 
-  constructor(private supabase: SupabaseService) {
+  private readonly _clients = signal<Client[]>([]);
+  readonly clients = this._clients.asReadonly();
+
+  constructor() {
     this.refresh();
-  }
-
-  getClients(): Observable<Client[]> {
-    return this.clients$.asObservable();
   }
 
   async getClient(id: string): Promise<Client | undefined> {
@@ -64,7 +62,7 @@ export class ClientService {
       console.error('clients refresh failed', error);
       return;
     }
-    this.clients$.next((data as ClienteRow[]).map((r) => this.toClient(r)));
+    this._clients.set((data as ClienteRow[]).map((r) => this.toClient(r)));
   }
 
   private toClient(row: ClienteRow): Client {

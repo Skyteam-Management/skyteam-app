@@ -1,110 +1,92 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
-import { ClientService } from 'src/app/dashboard/services/client.service';
-import { LiderService } from 'src/app/dashboard/services/lider.service';
-import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
-import { Client } from 'src/app/interfaces/client.interface';
-import { Lider } from 'src/app/interfaces/lider.interface';
-import Swal from 'sweetalert2';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
+import Swal from 'sweetalert2';
+import { ClientService } from 'src/app/dashboard/services/client.service';
+import { LiderService } from 'src/app/dashboard/services/lider.service';
+import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
+import { Client } from 'src/app/interfaces/client.interface';
 
 @Component({
-    selector: 'app-add-edit-clientes',
-    templateUrl: './add-edit-clientes.component.html',
-    styleUrls: ['./add-edit-clientes.component.css'],
-    imports: [MatDialogTitle, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker, MatDialogClose]
+  selector: 'app-add-edit-clientes',
+  templateUrl: './add-edit-clientes.component.html',
+  styleUrls: ['./add-edit-clientes.component.css'],
+  imports: [
+    MatDialogTitle,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatSuffix,
+    MatDatepicker,
+    MatDialogClose,
+  ],
 })
 export class AddEditClientComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private clientService = inject(ClientService);
+  private liderService = inject(LiderService);
+  private dialogRef = inject<MatDialogRef<AddEditClientComponent>>(MatDialogRef);
+  public data = inject(MAT_DIALOG_DATA);
+
   clientForm: FormGroup;
   maxDate = new Date();
-
-  lideres: Lider[] = []
-  
   paquetes = PAQUETES;
 
-  constructor(
-    private fb: FormBuilder,
-    private clientService: ClientService,
-    private liderService: LiderService,
-    private dialogRef: MatDialogRef<AddEditClientComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
+  readonly lideres = this.liderService.lideres;
+
+  constructor() {
     this.clientForm = this.fb.group({
       nombre: ['', Validators.required],
       telefono: ['', Validators.required],
       lider: ['', Validators.required],
       paquete: ['', Validators.required],
-      fechaInicio: [new Date(), Validators.required] // Initialize with current date
+      fechaInicio: [new Date(), Validators.required],
     });
-
-    // Debug: Log the received data
-    console.log('Data received in dialog:', this.data);
   }
 
   ngOnInit(): void {
-    this.liderService.getLideres().subscribe(lideres => {
-      this.lideres = lideres;
-      
-      // Initialize form with data after lideres are loaded
-      if (this.data && this.data.id) {
-        console.log('Editing client with data:', this.data);
-        
-        // Convert the fechaInicio string to a Date object
-        let fechaInicioDate = new Date();
-        if (this.data.fechaInicio) {
-          if (typeof this.data.fechaInicio === 'string') {
-            fechaInicioDate = new Date(this.data.fechaInicio);
-          } else {
-            fechaInicioDate = this.data.fechaInicio;
-          }
-        }
-        
-        // Prepare the data for the form
-        const formData = {
-          nombre: this.data.nombre || '',
-          telefono: this.data.telefono || '',
-          lider: this.data.lider || '',
-          paquete: this.data.paquete || '',
-          fechaInicio: fechaInicioDate
-        };
-        
-        console.log('Form data to patch:', formData);
-        this.clientForm.patchValue(formData);
+    if (this.data && this.data.id) {
+      let fechaInicioDate = new Date();
+      if (this.data.fechaInicio) {
+        fechaInicioDate = typeof this.data.fechaInicio === 'string' ? new Date(this.data.fechaInicio) : this.data.fechaInicio;
       }
-    });
-  }
-
-  onFormSubmit() {
-    if (this.clientForm.valid) {
-      if (this.data) {
-        const updateClient: Client = this.clientForm.value;
-        
-        this.clientService.updateClient(this.data.id, updateClient)
-          .then((val: any) => {
-            
-            Swal.fire('Éxito', `Cliente: ${updateClient.nombre} actualizado correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
-          });
-      } else {
-        const newClient: Client = this.clientForm.value;
-        this.clientService.addClient(newClient)
-          .then((val: any) => {
-            Swal.fire('Éxito', `Cliente: ${newClient.nombre} añadido correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err?.message ?? 'Error desconocido', 'error');
-          });
-      }
+      this.clientForm.patchValue({
+        nombre: this.data.nombre || '',
+        telefono: this.data.telefono || '',
+        lider: this.data.lider || '',
+        paquete: this.data.paquete || '',
+        fechaInicio: fechaInicioDate,
+      });
     }
   }
 
+  onFormSubmit() {
+    if (!this.clientForm.valid) return;
+    const formValue: Client = this.clientForm.value;
 
+    if (this.data?.id) {
+      this.clientService.updateClient(this.data.id, formValue)
+        .then(() => {
+          Swal.fire('Éxito', `Cliente: ${formValue.nombre} actualizado correctamente`, 'success');
+          this.dialogRef.close(true);
+        })
+        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+    } else {
+      this.clientService.addClient(formValue)
+        .then(() => {
+          Swal.fire('Éxito', `Cliente: ${formValue.nombre} añadido correctamente`, 'success');
+          this.dialogRef.close(true);
+        })
+        .catch((err: any) => Swal.fire('Error', err?.message ?? 'Error desconocido', 'error'));
+    }
+  }
 }

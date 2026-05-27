@@ -41,7 +41,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Líder</mat-label>
           <mat-select formControlName="lider">
-            @for (lider of lideres; track lider) {
+            @for (lider of lideres(); track lider.id) {
               <mat-option [value]="lider.id">
                 {{lider.nombre }} {{lider.apellido}}
               </mat-option>

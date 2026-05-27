@@ -1,23 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { User } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable, filter } from 'rxjs';
+import { filter } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _user$ = new BehaviorSubject<User | null | undefined>(undefined);
-  user$: Observable<User | null> = this._user$.asObservable().pipe(
+  private supabase = inject(SupabaseService);
+  private router = inject(Router);
+
+  private readonly _user = signal<User | null | undefined>(undefined);
+  readonly user = computed(() => this._user() ?? null);
+  readonly isLoggedIn = computed(() => this._user() != null);
+
+  readonly user$ = toObservable(this._user).pipe(
     filter((v): v is User | null => v !== undefined),
   );
 
-  constructor(
-    private supabase: SupabaseService,
-    private router: Router,
-  ) {
+  constructor() {
     this.supabase.client.auth.onAuthStateChange((_event, session) => {
-      this._user$.next(session?.user ?? null);
+      this._user.set(session?.user ?? null);
     });
   }
 

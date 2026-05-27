@@ -1,18 +1,16 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
 import { Lider } from '../../interfaces/lider.interface';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class LiderService {
-  private lideres$ = new BehaviorSubject<Lider[]>([]);
+  private supabase = inject(SupabaseService);
 
-  constructor(private supabase: SupabaseService) {
+  private readonly _lideres = signal<Lider[]>([]);
+  readonly lideres = this._lideres.asReadonly();
+
+  constructor() {
     this.refresh();
-  }
-
-  getLideres(): Observable<Lider[]> {
-    return this.lideres$.asObservable();
   }
 
   async getLider(id: string): Promise<Lider | undefined> {
@@ -54,6 +52,6 @@ export class LiderService {
       console.error('lideres refresh failed', error);
       return;
     }
-    this.lideres$.next((data ?? []) as Lider[]);
+    this._lideres.set((data ?? []) as Lider[]);
   }
 }
