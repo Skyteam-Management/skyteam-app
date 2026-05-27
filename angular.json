@@ -63,10 +63,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "skyteam_app:build:production"
+              "buildTarget": "skyteam_app:build:production"
             },
             "development": {
-              "browserTarget": "skyteam_app:build:development"
+              "buildTarget": "skyteam_app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -74,7 +74,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "skyteam_app:build"
+            "buildTarget": "skyteam_app:build"
           }
         },
         "test": {
