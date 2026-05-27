@@ -67,10 +67,10 @@
             <tr class="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-background)/40 transition-colors">
               <td class="px-4 py-3 capitalize">{{ row.nombre }}</td>
               <td class="px-4 py-3 text-(--color-muted-foreground)">{{ row.telefono || '—' }}</td>
-              <td class="px-4 py-3 capitalize">{{ row.liderNombre }}</td>
+              <td class="px-4 py-3 capitalize">{{ row.liderNombre ? (row.liderNombre + ' ' + (row.liderApellido || '')) : '—' }}</td>
               <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaInicio | date: 'd MMM, y') || '—' }}</td>
               <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaVencimiento | date: 'd MMM, y') || '—' }}</td>
-              <td class="px-4 py-3 text-(--color-muted-foreground)">{{ row.paqueteNombre }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground)">{{ row.paqueteNombre || '—' }}</td>
               <td class="px-4 py-3">
                 @if (row.expirado) {
                   <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-destructive)/15 text-(--color-destructive)">Vencido</span>

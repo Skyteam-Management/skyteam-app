@@ -47,8 +47,8 @@
 
     <button
       type="submit"
-      [disabled]="!loginForm.valid"
-      class="mt-2 inline-flex items-center justify-center h-10 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+      [class.opacity-50]="!loginForm.valid"
+      class="mt-2 inline-flex items-center justify-center h-10 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity"
     >
       Ingresar
     </button>

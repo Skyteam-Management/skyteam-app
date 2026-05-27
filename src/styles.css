@@ -38,6 +38,25 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Tailwind v4 removed the default cursor:pointer from buttons. Restore it. */
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Native select dropdowns inherit the translucent input background and render
+   options unreadably. Force a solid dark surface + dark color-scheme. */
+select {
+  color-scheme: dark;
+}
+select option {
+  background-color: var(--color-card);
+  color: var(--color-foreground);
+}
+select option:disabled {
+  color: var(--color-muted-foreground);
+}
+
 /* CDK overlay container needs to live above everything */
 .cdk-overlay-container {
   z-index: 1000;

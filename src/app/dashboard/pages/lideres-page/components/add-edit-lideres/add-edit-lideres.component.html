@@ -44,8 +44,8 @@
       </button>
       <button
         type="submit"
-        [disabled]="!liderForm.valid"
-        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+        [class.opacity-50]="!liderForm.valid"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity"
       >
         {{ data?.id ? 'Actualizar' : 'Guardar' }}
       </button>

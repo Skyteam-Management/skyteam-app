@@ -5,7 +5,7 @@ import { LucideDynamicIcon, LucideX } from '@lucide/angular';
 import Swal from 'sweetalert2';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
-import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
+import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
 
 @Component({
@@ -17,11 +17,12 @@ export class AddEditClientComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clientService = inject(ClientService);
   private liderService = inject(LiderService);
+  private paqueteService = inject(PaqueteService);
   private dialogRef = inject(DialogRef<boolean>);
   public data = inject(DIALOG_DATA);
 
   readonly X = LucideX;
-  readonly paquetes = PAQUETES;
+  readonly paquetes = this.paqueteService.activos;
   readonly lideres = this.liderService.lideres;
   readonly today = new Date().toISOString().split('T')[0];
 

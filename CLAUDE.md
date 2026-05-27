@@ -52,31 +52,36 @@ Environment shape (`src/app/environments/environment.ts`):
 
 ### Data services (Signals)
 
-`ClientService` and `LiderService` (`src/app/dashboard/services/`) follow the same pattern:
+`ClientService`, `LiderService` and `PaqueteService` (`src/app/dashboard/services/`) follow the same pattern:
 
-- Private `_clients = signal<Client[]>([])` / `_lideres = signal<Lider[]>([])` is the source of truth. Public `clients` / `lideres` are exposed as `asReadonly()` signals.
+- Private `_clients = signal<Client[]>([])` etc. is the source of truth. Public `clients` / `lideres` / `paquetes` are exposed as `asReadonly()` signals.
 - CRUD methods (`add*`, `update*`, `delete*`) are **async/Promise-returning** — callers use `.then().catch()`. Each mutation calls a private `refresh()` that re-fetches and updates the signal — that's why consumers don't need to manually trigger reloads after dialog close.
-- Consumer components read the service signals and (where they need a different shape, e.g. enriched with `liderNombre`) wrap them in `computed()`. Sync into non-reactive APIs (form fields, etc.) is done with `effect()`.
+- Consumer components read the service signals directly; for derived shapes (filter/sort/paginate) wrap them in `computed()`. Sync into non-reactive APIs (form fields, etc.) is done with `effect()`.
 - New row IDs are generated with `crypto.randomUUID()` in the service before insert; the DB has `id text PRIMARY KEY` with no default. IDs migrated from Firestore were preserved verbatim.
 
-**Column naming mismatch:** Postgres uses snake_case (`fecha_inicio`), the `Client` interface keeps camelCase (`fechaInicio`). `ClientService` has explicit `toClient` / `toRow` mappers — when adding new columns to `clientes`, update **both** mappers, not just the interface. `LiderService` doesn't need mapping because all lider columns are single-word.
+**`ClientService` reads from a view, writes to the table.** `refresh()` selects from `clientes_view` (which already joins `paquetes` and `lideres` and computes `fecha_vencimiento` / `expirado` in SQL). Mutations go straight to the `clientes` table. The `fromView` mapper turns snake_case columns into camelCase, and `toRow` does the reverse for writes — when adding new columns, update **both** the view and the mappers.
 
 ### Domain model
 
-`Client` interface (`src/app/interfaces/client.interface.ts`) carries `paquete` (id referencing `PAQUETES`) and `fechaInicio: string | Date | null` — the union is intentional: forms produce `Date` (native `<input type="date">`), DB returns ISO `string`. The service handles both.
+`Client` interface (`src/app/interfaces/client.interface.ts`) carries the writable fields (`nombre`, `telefono`, `lider`, `paquete`, `fechaInicio`) plus optional read-only enrichment from the view (`paqueteNombre`, `paqueteDias`, `fechaVencimiento`, `expirado`, `liderNombre`, `liderApellido`). The enrichment fields are populated by `ClientService.fromView` — components consume them directly instead of recomputing.
 
-The package catalog lives in `dashboard/shared/constants/paquetes.constants.ts` as a static array sorted with Spanish locale; entries mix months (e.g. `'12 MESES'`) and days (`'15 DÍAS'`). When adding new packages, update that array — table expiry calculations in `clientes-table.component.ts` (`getPaqueteDuration`) **parse the `nombre` string**.
+`fechaInicio` is `string | Date | null`: forms produce `Date` (native `<input type="date">`), the view returns an ISO `string` (the column is `date`). `ClientService.toRow` normalizes both to a `YYYY-MM-DD` literal before insert/update to avoid timezone drift.
 
-**`paquete` ID type quirk:** `PAQUETES[].id` is `number`, but the DB column is `text` and stores it as a string (`"1"`). All lookups use `String(p.id) === String(paqueteId)` to bridge the gap. Do not revert to `===` — it silently breaks the Paquete/estado/fechaVencimiento columns.
+`PAQUETES` is no longer a TS constant — paquetes live in the `paquetes` table (`PaqueteService`). The `activos` computed filters by `activo !== false` for use in the client form select.
 
 ### Database schema
 
-Lives in `migration/schema.sql`. Two tables, both with `id text PRIMARY KEY` (to preserve Firestore-era UUIDs and any client-generated UUIDs):
+Lives in `migration/schema.sql`. Three tables (all `id text PRIMARY KEY` — preserves Firestore-era UUIDs and lets the client generate IDs):
 
 - `lideres (id, nombre, apellido, created_at)`
-- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete, fecha_inicio, created_at)`
+- `paquetes (id, nombre unique, dias, activo, orden, created_at)` — catalog of available packages. `dias` drives the expiry calculation. Seeded with 14 default packages on fresh installs.
+- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete → paquetes.id ON DELETE SET NULL, fecha_inicio date, created_at)`
 
-RLS is **enabled** on both with a single policy: `authenticated` role has full access (matches the old Firebase behavior). The anon role gets nothing — unauthenticated reads will return empty. The dashboard guard handles UX gating; RLS is the actual access boundary.
+Plus the `clientes_view` view, which LEFT JOINs `paquetes` and `lideres` and exposes `paquete_nombre`, `paquete_dias`, `fecha_vencimiento`, `expirado`, `lider_nombre`, `lider_apellido`. Set with `security_invoker = true` so RLS on the base tables applies.
+
+RLS is **enabled** on all three tables with a single policy: `authenticated` role has full access (matches the old Firebase behavior). The anon role gets nothing — unauthenticated reads will return empty. The dashboard guard handles UX gating; RLS is the actual access boundary.
+
+Incremental migrations against existing databases live in `migration/migrations/` (e.g. `0002-paquetes-and-clientes-view.sql`). They are idempotent and non-destructive — safe to re-run.
 
 ### Migration tooling
 

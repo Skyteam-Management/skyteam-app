@@ -36,7 +36,7 @@
           @for (row of filtered(); track row.id) {
             <tr class="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-background)/40 transition-colors">
               <td class="px-4 py-3 capitalize">{{ row.nombre }}</td>
-              <td class="px-4 py-3 capitalize">{{ row.liderNombre }}</td>
+              <td class="px-4 py-3 capitalize">{{ row.liderNombre ? (row.liderNombre + ' ' + (row.liderApellido || '')) : '—' }}</td>
               <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaInicio | date: 'd MMM, y') || '—' }}</td>
               <td class="px-4 py-3">
                 @if (row.expirado) {
