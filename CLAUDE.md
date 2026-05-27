@@ -25,7 +25,7 @@ All routing lives in plain `Routes` files (no `RouterModule`):
 
 - `src/app/app.routes.ts` — root routes, bootstrapped via `provideRouter(APP_ROUTES)` in `main.ts`.
 - `src/app/auth/auth.routes.ts` — `/auth/login`, `/auth/clientes` (a legacy `TablePageComponent` — read-only client list; verify before extending).
-- `src/app/dashboard/dashboard.routes.ts` — `/dashboard/opciones`, `/dashboard/clientes`, `/dashboard/patrocinadores`. All render inside `DashboardLayoutComponent` (sidebar + content).
+- `src/app/dashboard/dashboard.routes.ts` — `/dashboard/opciones`, `/dashboard/clientes`, `/dashboard/patrocinadores`, `/dashboard/paquetes`, `/dashboard/historial`. All render inside `DashboardLayoutComponent` (sidebar + content).
 
 Auth: `/auth` is wrapped by `LoginGuard` (redirects authenticated users away). `/dashboard` is wrapped by `AuthGuard`.
 
@@ -73,9 +73,10 @@ Environment shape (`src/app/environments/environment.ts`):
 
 Lives in `migration/schema.sql`. Three tables (all `id text PRIMARY KEY` — preserves Firestore-era UUIDs and lets the client generate IDs):
 
-- `lideres (id, nombre, apellido, created_at)` — `unique (nombre, apellido)`.
-- `paquetes (id, nombre unique, dias, activo, created_at)` — catalog of available packages. `dias` drives the expiry calculation. Seeded with 14 default packages on fresh installs.
-- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete → paquetes.id ON DELETE SET NULL, fecha_inicio date, created_at)` — `unique nulls not distinct (nombre, telefono, lider, fecha_inicio)` prevents creating the exact same record twice. NULLS NOT DISTINCT (PG15+) means two NULLs compare as equal in the key.
+- `lideres (id, nombre, apellido, created_at, updated_at)` — `unique (nombre, apellido)`.
+- `paquetes (id, nombre unique, dias, activo, created_at, updated_at)` — catalog of available packages. `dias` drives the expiry calculation. Seeded with 14 default packages on fresh installs.
+- `clientes (id, nombre, telefono, lider → lideres.id ON DELETE SET NULL, paquete → paquetes.id ON DELETE SET NULL, fecha_inicio date, created_at, updated_at)` — `unique nulls not distinct (nombre, telefono, lider, fecha_inicio)` prevents creating the exact same record twice. NULLS NOT DISTINCT (PG15+) means two NULLs compare as equal in the key.
+- `historial (id, tabla, registro_id, accion, actor_id, actor_email, datos jsonb, created_at)` — audit log written by AFTER INSERT/UPDATE/DELETE triggers (`audit_row(p_tabla)`) on the three tables above. `actor_email` is resolved from `auth.users` at trigger time. The app reads (`HistorialService`) but never writes — only triggers do. A `purge_historial_antiguo()` function plus a daily `pg_cron` job (`0 3 * * *`) keep a rolling 30-day window. If `pg_cron` isn't enabled in Supabase the function still exists; the schedule just won't auto-run.
 
 Text fields (`nombre`, `apellido`, `telefono`) are normalized to upper case via BEFORE INSERT/UPDATE triggers on each table — so dedup constraints work without `upper()` wrappers. The UI mirrors this with the `appUppercase` directive (`src/app/shared/directives/uppercase.directive.ts`). When a unique constraint trips, `shared/errors/supabase-error.ts` maps the constraint name to a Spanish message shown through the toaster.
 

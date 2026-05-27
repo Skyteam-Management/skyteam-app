@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideX } from '@lucide/angular';
@@ -13,7 +14,7 @@ import { LiderComboboxComponent } from '../lider-combobox/lider-combobox.compone
 @Component({
   selector: 'app-add-edit-clientes',
   templateUrl: './add-edit-clientes.component.html',
-  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective, LiderComboboxComponent],
+  imports: [ReactiveFormsModule, DatePipe, LucideDynamicIcon, UppercaseDirective, LiderComboboxComponent],
 })
 export class AddEditClientComponent implements OnInit {
   private fb = inject(FormBuilder);

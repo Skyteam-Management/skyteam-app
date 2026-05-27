@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideX } from '@lucide/angular';
@@ -11,7 +12,7 @@ import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
 @Component({
   selector: 'app-add-edit-lider',
   templateUrl: './add-edit-lideres.component.html',
-  imports: [ReactiveFormsModule, LucideDynamicIcon, UppercaseDirective],
+  imports: [ReactiveFormsModule, DatePipe, LucideDynamicIcon, UppercaseDirective],
 })
 export class AddEditLiderComponent {
   private fb = inject(FormBuilder);

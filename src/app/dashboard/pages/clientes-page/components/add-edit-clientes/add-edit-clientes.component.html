@@ -6,6 +6,12 @@
         <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)">{{ data?.id ? 'Editar' : 'Nuevo' }}</span>
       </div>
       <h2 class="font-(family-name:--font-display) text-2xl tracking-tight leading-none" style="font-variation-settings: 'opsz' 72;">Cliente</h2>
+      @if (data?.id && (data?.createdAt || data?.updatedAt)) {
+        <div class="mt-2.5 text-[11px] text-(--color-muted-foreground)/80 flex flex-wrap gap-x-3 gap-y-0.5">
+          @if (data?.createdAt) { <span>Creado · {{ data?.createdAt | date: 'd MMM yyyy, HH:mm' }}</span> }
+          @if (data?.updatedAt && data?.updatedAt !== data?.createdAt) { <span class="text-(--color-gold)/80">Editado · {{ data?.updatedAt | date: 'd MMM yyyy, HH:mm' }}</span> }
+        </div>
+      }
     </div>
     <button
       type="button"

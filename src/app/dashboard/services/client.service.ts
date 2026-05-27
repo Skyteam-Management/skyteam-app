@@ -9,6 +9,8 @@ interface ClienteViewRow {
   lider: string | null;
   paquete: string | null;
   fecha_inicio: string | null;
+  created_at: string | null;
+  updated_at: string | null;
   paquete_nombre: string | null;
   paquete_dias: number | null;
   fecha_vencimiento: string | null;
@@ -84,6 +86,8 @@ export class ClientService {
       expirado: row.expirado ?? false,
       liderNombre: row.lider_nombre ?? '',
       liderApellido: row.lider_apellido ?? '',
+      createdAt: row.created_at ?? undefined,
+      updatedAt: row.updated_at ?? undefined,
     };
   }
 

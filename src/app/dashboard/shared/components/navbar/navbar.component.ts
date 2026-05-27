@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { LucideDynamicIcon, LucideUsers, LucideGem, LucidePackage, LucideLogOut, LucideMenu, LucideX } from '@lucide/angular';
+import { LucideDynamicIcon, LucideUsers, LucideGem, LucidePackage, LucideHistory, LucideLogOut, LucideMenu, LucideX } from '@lucide/angular';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
@@ -14,6 +14,7 @@ export class NavbarComponent {
   readonly Users = LucideUsers;
   readonly Gem = LucideGem;
   readonly Package = LucidePackage;
+  readonly History = LucideHistory;
   readonly LogOut = LucideLogOut;
   readonly Menu = LucideMenu;
   readonly X = LucideX;

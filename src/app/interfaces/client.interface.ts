@@ -13,4 +13,6 @@ export interface Client {
   expirado?: boolean;
   liderNombre?: string;
   liderApellido?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
