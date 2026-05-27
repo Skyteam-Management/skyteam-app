@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -9,12 +9,15 @@ import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.comp
 import Swal from 'sweetalert2';
 import { from } from 'rxjs';
 import { AddEditLiderComponent } from '../add-edit-lideres/add-edit-lideres.component';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-lideres-table',
     templateUrl: './lideres-table.component.html',
     styleUrls: ['./lideres-table.component.css'],
-    standalone: false
+    imports: [MatFormField, MatLabel, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator]
 })
 export class LideresTableComponent implements OnInit {
   liderList: Lider[] = [];

@@ -1,15 +1,17 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import Swal from 'sweetalert2';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 @Component({
     selector: 'app-add-edit-lider',
     templateUrl: './add-edit-lideres.component.html',
     styleUrls: ['./add-edit-lideres.component.css'],
-    standalone: false
+    imports: [MatDialogTitle, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatDialogClose]
 })
 export class AddEditLiderComponent {
   liderForm: FormGroup;

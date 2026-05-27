@@ -1,18 +1,22 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
 import { Client } from 'src/app/interfaces/client.interface';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import Swal from 'sweetalert2';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatDatepickerInput, MatDatepickerToggle, MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
     selector: 'app-add-edit-clientes',
     templateUrl: './add-edit-clientes.component.html',
     styleUrls: ['./add-edit-clientes.component.css'],
-    standalone: false
+    imports: [MatDialogTitle, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, MatDatepickerInput, MatDatepickerToggle, MatSuffix, MatDatepicker, MatDialogClose]
 })
 export class AddEditClientComponent implements OnInit {
   clientForm: FormGroup;

@@ -4,13 +4,15 @@ import { ClientService } from '../../services/client.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditClientComponent } from './components/add-edit-clientes/add-edit-clientes.component';
+import { MatButton } from '@angular/material/button';
+import { ClientesTableComponent } from './components/clientes-table/clientes-table.component';
 
 @Component({
     selector: 'app-clientes-page',
     templateUrl: './clientes-page.component.html',
     styleUrls: ['./clientes-page.component.css'],
     providers: [DatePipe],
-    standalone: false
+    imports: [MatButton, ClientesTableComponent]
 })
 export class ClientesPageComponent {
 

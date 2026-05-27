@@ -1,17 +1,21 @@
 import { Component, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { Client } from 'src/app/interfaces/client.interface';
 import { Lider } from 'src/app/interfaces/lider.interface';
+import { MatButton } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 @Component({
     selector: 'app-table-page',
     templateUrl: './table-page.component.html',
     styleUrls: ['./table-page.component.css'],
-    standalone: false
+    imports: [MatButton, RouterLink, MatFormField, MatLabel, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator]
 })
 export class TablePageComponent {
   clientList: Client[] = [];

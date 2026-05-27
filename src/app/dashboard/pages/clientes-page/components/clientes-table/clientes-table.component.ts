@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { MatTableDataSource, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow } from '@angular/material/table';
 import { ClientService } from 'src/app/dashboard/services/client.service';
 import { Client } from 'src/app/interfaces/client.interface';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -12,12 +12,16 @@ import { AddEditClientComponent } from '../add-edit-clientes/add-edit-clientes.c
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
 import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-clientes-table',
     templateUrl: './clientes-table.component.html',
     styleUrls: ['./clientes-table.component.css'],
-    standalone: false
+    imports: [MatFormField, MatLabel, MatInput, MatTable, MatSort, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatSortHeader, MatCellDef, MatCell, MatIcon, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatNoDataRow, MatPaginator, DatePipe]
 })
 export class ClientesTableComponent implements OnInit {
   clientList: Client[] = [];

@@ -8,8 +8,8 @@ describe('LideresTableComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LideresTableComponent]
-    });
+    imports: [LideresTableComponent]
+});
     fixture = TestBed.createComponent(LideresTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

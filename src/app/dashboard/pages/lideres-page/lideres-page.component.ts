@@ -4,13 +4,15 @@ import { LiderService } from '../../services/lider.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditLiderComponent } from './components/add-edit-lideres/add-edit-lideres.component';
+import { MatButton } from '@angular/material/button';
+import { LideresTableComponent } from './components/lideres-table/lideres-table.component';
 
 @Component({
     selector: 'app-lideres-page',
     templateUrl: './lideres-page.component.html',
     styleUrls: ['./lideres-page.component.css'],
     providers: [DatePipe],
-    standalone: false
+    imports: [MatButton, LideresTableComponent]
 })
 export class LideresPageComponent {
 
