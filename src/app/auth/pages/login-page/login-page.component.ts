@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { LucideDynamicIcon, LucideEye, LucideEyeOff, LucideMail } from '@lucide/angular';
 import { AuthService } from '../../services/auth.service';
 
+const REMEMBERED_EMAIL_KEY = 'avm:remembered_email';
+
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
@@ -18,6 +20,7 @@ export class LoginPageComponent {
 
   hide = signal(true);
   submitting = signal(false);
+  remember = signal(false);
 
   emailInput = viewChild<ElementRef<HTMLInputElement>>('emailInput');
   passwordInput = viewChild<ElementRef<HTMLInputElement>>('passwordInput');
@@ -27,8 +30,20 @@ export class LoginPageComponent {
     password: ['', [Validators.required]],
   });
 
+  constructor() {
+    const stored = this.readRememberedEmail();
+    if (stored) {
+      this.loginForm.patchValue({ email: stored });
+      this.remember.set(true);
+    }
+  }
+
   togglePassword() {
     this.hide.update((v) => !v);
+  }
+
+  toggleRemember() {
+    this.remember.update((v) => !v);
   }
 
   async logIn() {
@@ -50,9 +65,30 @@ export class LoginPageComponent {
     this.submitting.set(true);
     try {
       const { email, password } = this.loginForm.value;
-      await this.authService.logInWithEmail(email, password);
+      const result = await this.authService.logInWithEmail(email, password);
+      if (result) this.persistRememberedEmail(email);
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  private persistRememberedEmail(email: string) {
+    try {
+      if (this.remember()) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, email);
+      } else {
+        localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      }
+    } catch {
+      // localStorage may be unavailable (private mode, quota). Ignore — non-critical.
+    }
+  }
+
+  private readRememberedEmail(): string | null {
+    try {
+      return localStorage.getItem(REMEMBERED_EMAIL_KEY);
+    } catch {
+      return null;
     }
   }
 }

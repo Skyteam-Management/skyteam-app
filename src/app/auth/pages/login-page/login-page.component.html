@@ -68,12 +68,23 @@
       </div>
     </div>
 
+    <!-- remember email -->
+    <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        [checked]="remember()"
+        (change)="toggleRemember()"
+        class="size-4 rounded border-(--color-border) bg-(--color-input) accent-(--color-gold)"
+      />
+      <span class="text-xs text-(--color-muted-foreground)">Recordar mi correo en este dispositivo</span>
+    </label>
+
     <!-- submit -->
     <button
       type="submit"
       [disabled]="submitting()"
       [class.opacity-60]="submitting() || !loginForm.valid"
-      class="group relative mt-3 inline-flex items-center justify-center h-12 rounded-md bg-(--color-gold) text-(--color-gold-foreground) text-sm font-semibold tracking-wide hover:bg-(--color-gold)/90 transition-all overflow-hidden disabled:cursor-wait"
+      class="group relative mt-1 inline-flex items-center justify-center h-12 rounded-md bg-(--color-gold) text-(--color-gold-foreground) text-sm font-semibold tracking-wide hover:bg-(--color-gold)/90 transition-all overflow-hidden disabled:cursor-wait"
     >
       <span class="relative z-10">{{ submitting() ? 'Ingresando…' : 'Ingresar' }}</span>
       <span aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
