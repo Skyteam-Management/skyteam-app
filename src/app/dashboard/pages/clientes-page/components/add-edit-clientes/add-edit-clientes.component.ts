@@ -9,6 +9,7 @@ import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
+import { collectFormIssues, FieldLabels, summarizeFormIssues } from 'src/app/shared/forms/form-validation';
 import { LiderComboboxComponent } from '../lider-combobox/lider-combobox.component';
 
 @Component({
@@ -37,6 +38,14 @@ export class AddEditClientComponent implements OnInit {
     fechaInicio: [this.today, Validators.required],
   });
 
+  private readonly fieldLabels: FieldLabels = {
+    nombre: 'Nombre completo',
+    telefono: 'Teléfono',
+    lider: 'Patrocinador',
+    paquete: 'Paquete',
+    fechaInicio: 'Fecha de pago',
+  };
+
   ngOnInit(): void {
     if (this.data?.id) {
       let fechaInicioStr = this.today;
@@ -61,7 +70,13 @@ export class AddEditClientComponent implements OnInit {
   }
 
   async onFormSubmit() {
-    if (this.submitting() || !this.clientForm.valid) return;
+    if (this.submitting()) return;
+    if (!this.clientForm.valid) {
+      this.clientForm.markAllAsTouched();
+      const { title, description } = summarizeFormIssues(collectFormIssues(this.clientForm, this.fieldLabels));
+      this.toast.error(title, description);
+      return;
+    }
     const formValue: Client = {
       ...this.clientForm.value,
       fechaInicio: this.clientForm.value.fechaInicio ? new Date(this.clientForm.value.fechaInicio) : null,

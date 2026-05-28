@@ -2,6 +2,8 @@ import { Component, ElementRef, inject, signal, viewChild } from '@angular/core'
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideEye, LucideEyeOff, LucideMail } from '@lucide/angular';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
+import { collectFormIssues, FieldLabels, summarizeFormIssues } from 'src/app/shared/forms/form-validation';
 
 const REMEMBERED_EMAIL_KEY = 'avm:remembered_email';
 
@@ -13,6 +15,7 @@ const REMEMBERED_EMAIL_KEY = 'avm:remembered_email';
 export class LoginPageComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private toast = inject(ToastService);
 
   readonly Eye = LucideEye;
   readonly EyeOff = LucideEyeOff;
@@ -29,6 +32,11 @@ export class LoginPageComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
+
+  private readonly fieldLabels: FieldLabels = {
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+  };
 
   constructor() {
     const stored = this.readRememberedEmail();
@@ -61,7 +69,12 @@ export class LoginPageComponent {
       );
     }
 
-    if (!this.loginForm.valid) return;
+    if (!this.loginForm.valid) {
+      this.loginForm.markAllAsTouched();
+      const { title, description } = summarizeFormIssues(collectFormIssues(this.loginForm, this.fieldLabels));
+      this.toast.error(title, description);
+      return;
+    }
     this.submitting.set(true);
     try {
       const { email, password } = this.loginForm.value;

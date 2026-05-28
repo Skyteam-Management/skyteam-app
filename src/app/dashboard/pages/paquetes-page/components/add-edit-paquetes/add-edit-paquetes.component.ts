@@ -8,6 +8,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
 import { Paquete } from 'src/app/interfaces/paquete.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
+import { collectFormIssues, FieldLabels, summarizeFormIssues } from 'src/app/shared/forms/form-validation';
 
 @Component({
   selector: 'app-add-edit-paquete',
@@ -30,6 +31,12 @@ export class AddEditPaqueteComponent {
     activo: [true],
   });
 
+  private readonly fieldLabels: FieldLabels = {
+    nombre: 'Nombre',
+    dias: 'Duración (días)',
+    activo: 'Activo',
+  };
+
   constructor() {
     if (this.data?.id) {
       this.paqueteForm.patchValue({
@@ -45,7 +52,13 @@ export class AddEditPaqueteComponent {
   }
 
   async onFormSubmit() {
-    if (this.submitting() || !this.paqueteForm.valid) return;
+    if (this.submitting()) return;
+    if (!this.paqueteForm.valid) {
+      this.paqueteForm.markAllAsTouched();
+      const { title, description } = summarizeFormIssues(collectFormIssues(this.paqueteForm, this.fieldLabels));
+      this.toast.error(title, description);
+      return;
+    }
     const raw = this.paqueteForm.value;
     const payload: Omit<Paquete, 'id'> = {
       nombre: (raw.nombre ?? '').trim(),

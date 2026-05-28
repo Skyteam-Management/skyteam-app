@@ -8,6 +8,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
 import { Lider } from 'src/app/interfaces/lider.interface';
 import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
 import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
+import { collectFormIssues, FieldLabels, summarizeFormIssues } from 'src/app/shared/forms/form-validation';
 
 @Component({
   selector: 'app-add-edit-lider',
@@ -29,6 +30,11 @@ export class AddEditLiderComponent {
     apellido: ['', Validators.required],
   });
 
+  private readonly fieldLabels: FieldLabels = {
+    nombre: 'Nombre',
+    apellido: 'Apellido',
+  };
+
   constructor() {
     if (this.data?.id) {
       this.liderForm.patchValue(this.data);
@@ -40,7 +46,13 @@ export class AddEditLiderComponent {
   }
 
   async onFormSubmit() {
-    if (this.submitting() || !this.liderForm.valid) return;
+    if (this.submitting()) return;
+    if (!this.liderForm.valid) {
+      this.liderForm.markAllAsTouched();
+      const { title, description } = summarizeFormIssues(collectFormIssues(this.liderForm, this.fieldLabels));
+      this.toast.error(title, description);
+      return;
+    }
     const formValue: Lider = this.liderForm.value;
     const editing = !!this.data?.id;
     this.submitting.set(true);
