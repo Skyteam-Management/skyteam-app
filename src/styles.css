@@ -99,3 +99,11 @@ select option:disabled {
   z-index: 1000;
 }
 
+/* Dialog backdrop — dark wash + frosted blur. Applied via DEFAULT_DIALOG_CONFIG
+   in main.ts so every dialog opens with the same atmosphere. */
+.app-dialog-backdrop {
+  background: oklch(0 0 0 / 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+

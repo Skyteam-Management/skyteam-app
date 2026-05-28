@@ -1,11 +1,11 @@
-<div class="flex flex-col gap-8">
-  <div class="flex items-end justify-between gap-4 flex-wrap">
+<div class="flex flex-col gap-6 sm:gap-8">
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
     <div>
       <div class="flex items-center gap-3 mb-3">
         <span class="block h-px w-10 bg-(--color-gold)"></span>
         <span class="text-[11px] uppercase tracking-[0.32em] text-(--color-muted-foreground)">Auditoría</span>
       </div>
-      <h1 class="font-(family-name:--font-display) text-4xl tracking-tight leading-none" style="font-variation-settings: 'opsz' 96, 'SOFT' 30;">
+      <h1 class="font-(family-name:--font-display) text-3xl sm:text-4xl tracking-tight leading-none" style="font-variation-settings: 'opsz' 96, 'SOFT' 30;">
         Historial<span class="text-(--color-gold)">.</span>
       </h1>
       <p class="mt-3 text-sm text-(--color-muted-foreground) max-w-md">
@@ -16,7 +16,7 @@
       type="button"
       (click)="refresh()"
       [disabled]="loading()"
-      class="inline-flex items-center gap-2 h-10 px-5 rounded-md border border-(--color-border) bg-transparent text-sm font-medium hover:bg-(--color-accent) transition-colors disabled:opacity-50"
+      class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md border border-(--color-border) bg-transparent text-sm font-medium hover:bg-(--color-accent) transition-colors disabled:opacity-50 shrink-0"
     >
       <svg lucideIcon [lucideIcon]="Refresh" class="size-4" [class.animate-spin]="loading()"></svg>
       Actualizar

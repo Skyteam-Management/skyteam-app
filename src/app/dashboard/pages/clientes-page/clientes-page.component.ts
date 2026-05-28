@@ -15,9 +15,6 @@ export class ClientesPageComponent {
   readonly Plus = LucidePlus;
 
   openAddForm() {
-    this.dialog.open(AddEditClientComponent, {
-      panelClass: 'custom-dialog-container',
-      backdropClass: 'cdk-overlay-dark-backdrop',
-    });
+    this.dialog.open(AddEditClientComponent);
   }
 }

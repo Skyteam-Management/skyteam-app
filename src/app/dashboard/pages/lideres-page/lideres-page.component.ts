@@ -15,9 +15,6 @@ export class LideresPageComponent {
   readonly Plus = LucidePlus;
 
   openAddForm() {
-    this.dialog.open(AddEditLiderComponent, {
-      panelClass: 'custom-dialog-container',
-      backdropClass: 'cdk-overlay-dark-backdrop',
-    });
+    this.dialog.open(AddEditLiderComponent);
   }
 }
