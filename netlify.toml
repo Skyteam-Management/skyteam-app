@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist/skyteam_app"
+
+[build.environment]
+  # Angular 21 requires Node 20.19+ or 22.12+. .nvmrc is also present;
+  # this is the explicit, in-repo source of truth.
+  NODE_VERSION = "22"
+
+# SPA fallback is handled by src/_redirects, which Angular copies to
+# dist/skyteam_app/_redirects via the assets list in angular.json. No
+# [[redirects]] block here so we don't duplicate that.
