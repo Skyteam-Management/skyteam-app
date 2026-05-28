@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +22,7 @@ export class AddEditPaqueteComponent {
   public data = inject(DIALOG_DATA) as Paquete | undefined;
 
   readonly X = LucideX;
+  readonly submitting = signal(false);
 
   paqueteForm: FormGroup = this.fb.group({
     nombre: ['', Validators.required],
@@ -43,24 +44,27 @@ export class AddEditPaqueteComponent {
     this.dialogRef.close(false);
   }
 
-  onFormSubmit() {
-    if (!this.paqueteForm.valid) return;
+  async onFormSubmit() {
+    if (this.submitting() || !this.paqueteForm.valid) return;
     const raw = this.paqueteForm.value;
     const payload: Omit<Paquete, 'id'> = {
       nombre: (raw.nombre ?? '').trim(),
       dias: Number(raw.dias),
       activo: !!raw.activo,
     };
-
-    const op = this.data?.id
-      ? this.paqueteService.updatePaquete(this.data.id, payload)
-      : this.paqueteService.addPaquete(payload);
-
     const editing = !!this.data?.id;
-    op.then(() => {
-        this.toast.success(editing ? 'Paquete actualizado' : 'Paquete añadido', payload.nombre);
-        this.dialogRef.close(true);
-      })
-      .catch((err: any) => this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err)));
+    this.submitting.set(true);
+    try {
+      if (editing) {
+        await this.paqueteService.updatePaquete(this.data!.id, payload);
+      } else {
+        await this.paqueteService.addPaquete(payload);
+      }
+      this.toast.success(editing ? 'Paquete actualizado' : 'Paquete añadido', payload.nombre);
+      this.dialogRef.close(true);
+    } catch (err: any) {
+      this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err));
+      this.submitting.set(false);
+    }
   }
 }

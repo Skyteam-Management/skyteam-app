@@ -32,6 +32,7 @@
       <label for="email" class="text-[11px] uppercase tracking-[0.22em] text-(--color-muted-foreground)">Correo electrónico</label>
       <div class="relative group">
         <input
+          #emailInput
           id="email"
           type="email"
           formControlName="email"
@@ -48,6 +49,7 @@
       <label for="password" class="text-[11px] uppercase tracking-[0.22em] text-(--color-muted-foreground)">Contraseña</label>
       <div class="relative group">
         <input
+          #passwordInput
           id="password"
           [type]="hide() ? 'password' : 'text'"
           formControlName="password"
@@ -69,10 +71,11 @@
     <!-- submit -->
     <button
       type="submit"
-      [class.opacity-50]="!loginForm.valid"
-      class="group relative mt-3 inline-flex items-center justify-center h-12 rounded-md bg-(--color-gold) text-(--color-gold-foreground) text-sm font-semibold tracking-wide hover:bg-(--color-gold)/90 transition-all overflow-hidden"
+      [disabled]="submitting()"
+      [class.opacity-60]="submitting() || !loginForm.valid"
+      class="group relative mt-3 inline-flex items-center justify-center h-12 rounded-md bg-(--color-gold) text-(--color-gold-foreground) text-sm font-semibold tracking-wide hover:bg-(--color-gold)/90 transition-all overflow-hidden disabled:cursor-wait"
     >
-      <span class="relative z-10">Ingresar</span>
+      <span class="relative z-10">{{ submitting() ? 'Ingresando…' : 'Ingresar' }}</span>
       <span aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
     </button>
 

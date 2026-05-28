@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +22,7 @@ export class AddEditLiderComponent {
   public data = inject(DIALOG_DATA);
 
   readonly X = LucideX;
+  readonly submitting = signal(false);
 
   liderForm: FormGroup = this.fb.group({
     nombre: ['', Validators.required],
@@ -38,24 +39,23 @@ export class AddEditLiderComponent {
     this.dialogRef.close(false);
   }
 
-  onFormSubmit() {
-    if (!this.liderForm.valid) return;
+  async onFormSubmit() {
+    if (this.submitting() || !this.liderForm.valid) return;
     const formValue: Lider = this.liderForm.value;
-
-    if (this.data?.id) {
-      this.liderService.updateLider(this.data.id, formValue)
-        .then(() => {
-          this.toast.success('Patrocinador actualizado', `${formValue.nombre} ${formValue.apellido}`);
-          this.dialogRef.close(true);
-        })
-        .catch((err: any) => this.toast.error('No se pudo actualizar', describeSupabaseError(err)));
-    } else {
-      this.liderService.addLider(formValue)
-        .then(() => {
-          this.toast.success('Patrocinador añadido', `${formValue.nombre} ${formValue.apellido}`);
-          this.dialogRef.close(true);
-        })
-        .catch((err: any) => this.toast.error('No se pudo añadir', describeSupabaseError(err)));
+    const editing = !!this.data?.id;
+    this.submitting.set(true);
+    try {
+      if (editing) {
+        await this.liderService.updateLider(this.data.id, formValue);
+        this.toast.success('Patrocinador actualizado', `${formValue.nombre} ${formValue.apellido}`);
+      } else {
+        await this.liderService.addLider(formValue);
+        this.toast.success('Patrocinador añadido', `${formValue.nombre} ${formValue.apellido}`);
+      }
+      this.dialogRef.close(true);
+    } catch (err: any) {
+      this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err));
+      this.submitting.set(false);
     }
   }
 }

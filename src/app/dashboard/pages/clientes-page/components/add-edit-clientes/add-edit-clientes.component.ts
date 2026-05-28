@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ export class AddEditClientComponent implements OnInit {
   readonly X = LucideX;
   readonly paquetes = this.paqueteService.activos;
   readonly today = new Date().toISOString().split('T')[0];
+  readonly submitting = signal(false);
 
   clientForm: FormGroup = this.fb.group({
     nombre: ['', Validators.required],
@@ -59,27 +60,26 @@ export class AddEditClientComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  onFormSubmit() {
-    if (!this.clientForm.valid) return;
+  async onFormSubmit() {
+    if (this.submitting() || !this.clientForm.valid) return;
     const formValue: Client = {
       ...this.clientForm.value,
       fechaInicio: this.clientForm.value.fechaInicio ? new Date(this.clientForm.value.fechaInicio) : null,
     };
-
-    if (this.data?.id) {
-      this.clientService.updateClient(this.data.id, formValue)
-        .then(() => {
-          this.toast.success('Cliente actualizado', formValue.nombre);
-          this.dialogRef.close(true);
-        })
-        .catch((err: any) => this.toast.error('No se pudo actualizar', describeSupabaseError(err)));
-    } else {
-      this.clientService.addClient(formValue)
-        .then(() => {
-          this.toast.success('Cliente añadido', formValue.nombre);
-          this.dialogRef.close(true);
-        })
-        .catch((err: any) => this.toast.error('No se pudo añadir', describeSupabaseError(err)));
+    const editing = !!this.data?.id;
+    this.submitting.set(true);
+    try {
+      if (editing) {
+        await this.clientService.updateClient(this.data.id, formValue);
+        this.toast.success('Cliente actualizado', formValue.nombre);
+      } else {
+        await this.clientService.addClient(formValue);
+        this.toast.success('Cliente añadido', formValue.nombre);
+      }
+      this.dialogRef.close(true);
+    } catch (err: any) {
+      this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err));
+      this.submitting.set(false);
     }
   }
 }

@@ -58,10 +58,11 @@
       </button>
       <button
         type="submit"
-        [class.opacity-50]="!liderForm.valid"
-        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity"
+        [disabled]="submitting()"
+        [class.opacity-60]="submitting() || !liderForm.valid"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity disabled:cursor-wait"
       >
-        {{ data?.id ? 'Actualizar' : 'Guardar' }}
+        {{ submitting() ? 'Guardando…' : (data?.id ? 'Actualizar' : 'Guardar') }}
       </button>
     </div>
   </form>

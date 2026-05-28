@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideEye, LucideEyeOff, LucideMail } from '@lucide/angular';
 import { AuthService } from '../../services/auth.service';
@@ -17,6 +17,10 @@ export class LoginPageComponent {
   readonly Mail = LucideMail;
 
   hide = signal(true);
+  submitting = signal(false);
+
+  emailInput = viewChild<ElementRef<HTMLInputElement>>('emailInput');
+  passwordInput = viewChild<ElementRef<HTMLInputElement>>('passwordInput');
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -27,9 +31,28 @@ export class LoginPageComponent {
     this.hide.update((v) => !v);
   }
 
-  logIn() {
+  async logIn() {
+    if (this.submitting()) return;
+
+    // Some browsers don't fire `input` events for autofilled credentials, so
+    // the FormControls stay empty even though the DOM has values. Sync from
+    // the DOM as a fallback before validating.
+    const emailEl = this.emailInput()?.nativeElement;
+    const passwordEl = this.passwordInput()?.nativeElement;
+    if (emailEl && passwordEl) {
+      this.loginForm.patchValue(
+        { email: emailEl.value, password: passwordEl.value },
+        { emitEvent: false }
+      );
+    }
+
     if (!this.loginForm.valid) return;
-    const { email, password } = this.loginForm.value;
-    this.authService.logInWithEmail(email, password);
+    this.submitting.set(true);
+    try {
+      const { email, password } = this.loginForm.value;
+      await this.authService.logInWithEmail(email, password);
+    } finally {
+      this.submitting.set(false);
+    }
   }
 }

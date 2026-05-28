@@ -26,6 +26,7 @@ export class LiderComboboxComponent implements ControlValueAccessor {
   readonly highlight = signal(0);
   readonly value = signal('');
   readonly disabled = signal(false);
+  private readonly showAll = signal(false);
 
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -39,8 +40,9 @@ export class LiderComboboxComponent implements ControlValueAccessor {
   });
 
   readonly filtered = computed(() => {
-    const q = this.query().trim().toLowerCase();
     const all = this.lideres();
+    if (this.showAll()) return all;
+    const q = this.query().trim().toLowerCase();
     if (!q) return all;
     return all.filter((l) => `${l.nombre} ${l.apellido}`.toLowerCase().includes(q));
   });
@@ -53,13 +55,15 @@ export class LiderComboboxComponent implements ControlValueAccessor {
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState(isDisabled: boolean): void { this.disabled.set(isDisabled); }
 
-  onFocus() {
+  onFocus(event: FocusEvent) {
     if (this.disabled()) return;
     if (this.blurTimer) { clearTimeout(this.blurTimer); this.blurTimer = null; }
     this.open.set(true);
-    // Show the full list on focus, even if the input already shows a name.
-    this.query.set('');
+    // Keep the current name visible in the input but show the full list
+    // (don't filter by it). Select-all so typing replaces, and Esc reverts.
+    this.showAll.set(true);
     this.highlight.set(0);
+    (event.target as HTMLInputElement).select();
   }
 
   onBlur() {
@@ -76,6 +80,7 @@ export class LiderComboboxComponent implements ControlValueAccessor {
     this.query.set(v);
     this.open.set(true);
     this.highlight.set(0);
+    this.showAll.set(false);
 
     // Typing clears the bound value. Picking an item below resets it.
     if (this.value() !== '') {
@@ -89,6 +94,7 @@ export class LiderComboboxComponent implements ControlValueAccessor {
     this.value.set(lider.id);
     this.query.set(`${lider.nombre} ${lider.apellido}`);
     this.open.set(false);
+    this.showAll.set(false);
     this.onChange(lider.id);
   }
 
