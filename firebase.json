@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/skyteam_app",
+    "public": "dist/skyteam_app/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

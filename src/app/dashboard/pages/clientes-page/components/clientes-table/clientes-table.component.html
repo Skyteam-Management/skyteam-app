@@ -1,75 +1,155 @@
-<div class="contenedor-adm">
-
-  <mat-form-field appearance="outline">
-    <mat-label>Buscador</mat-label>
-    <input appearance="fill" matInput (keyup)="applyFilter($event)"
-      placeholder="Busca por: nombre, apellido, patrocinador, etc..." #input>
-  </mat-form-field>
-
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource" matSort>
-
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
-        <td mat-cell *matCellDef="let row"> {{row.nombre}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="telefono">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Teléfono </th>
-        <td mat-cell *matCellDef="let row"> {{row.telefono}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="lider">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Patrocinador </th>
-        <td mat-cell *matCellDef="let row"> {{getLiderName(row.lider) }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="fechaInicio">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de Pago </th>
-        <td mat-cell *matCellDef="let row"> {{row.fechaInicio | date: 'MMM d, y'}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="fechaVencimiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de Vencimiento </th>
-        <td mat-cell *matCellDef="let row"> {{calculateFechaVencimiento(row.fechaInicio, row.paquete) | date: 'MMM d, y'}} </td>
-      </ng-container>
-      
-      <ng-container matColumnDef="paquete">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Paquete </th>
-        <td mat-cell *matCellDef="let row"> {{getPaqueteName(row.paquete)}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de pago </th>
-        <td mat-cell *matCellDef="let row">
-          <span class="badge rounded-pill text-bg-danger" *ngIf="isExpired(row.fechaInicio, row.paquete)">Vencido</span>
-    <span class="badge rounded-pill text-bg-success" *ngIf="!isExpired(row.fechaInicio, row.paquete)">Activo</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
-        <td mat-cell *matCellDef="let row; let i = index">
-          <a (click)="openEditForm(row)" class="pointer" style="color: #1878B0;">
-            <mat-icon>edit</mat-icon>
-          </a>
-          <a (click)="deleteClient(row)" class="pointer" style="color: #E50914;">
-            <mat-icon>delete</mat-icon>
-          </a>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-      <!-- Row shown when there is no matching data. -->
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="4">No hay datos relacionados a: "{{input.value}}"</td>
-      </tr>
-
-    </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" aria-label="Select page of periodic elements"></mat-paginator>
-
+<div class="flex flex-col gap-4">
+  <!-- search -->
+  <div class="relative max-w-sm w-full">
+    <svg lucideIcon [lucideIcon]="Search" class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-(--color-muted-foreground)"></svg>
+    <input
+      type="search"
+      [value]="filter()"
+      (input)="onFilterChange($event)"
+      placeholder="Busca por nombre, teléfono o patrocinador..."
+      class="w-full h-10 rounded-md border border-(--color-border) bg-(--color-input) pl-10 pr-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+    />
   </div>
 
+  <!-- table -->
+  <div class="rounded-lg border border-(--color-border) bg-(--color-card) overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-(--color-border) bg-(--color-background)/40">
+          <tr>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('nombre')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Nombre
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'nombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('telefono')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Teléfono
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'telefono' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('liderNombre')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Patrocinador
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'liderNombre' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('fechaInicio')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Fecha de pago
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'fechaInicio' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('fechaVencimiento')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Vencimiento
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'fechaVencimiento' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('paquete')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Paquete
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'paquete' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-left font-medium px-4 py-3 whitespace-nowrap">
+              <button type="button" (click)="toggleSort('estado')" class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] font-medium hover:text-(--color-foreground) text-(--color-muted-foreground) transition-colors">
+                Estado
+                <svg lucideIcon [lucideIcon]="sortColumn() === 'estado' ? (sortDir() === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown" class="size-3.5"></svg>
+              </button>
+            </th>
+            <th class="text-right text-[11px] uppercase tracking-[0.18em] font-medium px-4 py-3 text-(--color-muted-foreground)">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of paged(); track row.id) {
+            <tr class="border-b border-(--color-border) last:border-b-0 hover:bg-(--color-background)/40 transition-colors">
+              <td class="px-4 py-3 capitalize">{{ row.nombre }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground)">{{ row.telefono || '—' }}</td>
+              <td class="px-4 py-3 capitalize">{{ row.liderNombre ? (row.liderNombre + ' ' + (row.liderApellido || '')) : '—' }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaInicio | date: 'd MMM, y') || '—' }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground) whitespace-nowrap">{{ (row.fechaVencimiento | date: 'd MMM, y') || '—' }}</td>
+              <td class="px-4 py-3 text-(--color-muted-foreground)">{{ row.paqueteNombre || '—' }}</td>
+              <td class="px-4 py-3">
+                @if (row.expirado) {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-destructive)/15 text-(--color-destructive)">Vencido</span>
+                } @else {
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-(--color-success)/15 text-(--color-success)">Activo</span>
+                }
+              </td>
+              <td class="px-4 py-3 text-right whitespace-nowrap">
+                <button
+                  type="button"
+                  (click)="openEditForm(row)"
+                  aria-label="Editar cliente"
+                  class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+                >
+                  <svg lucideIcon [lucideIcon]="Pencil" class="size-4"></svg>
+                </button>
+                <button
+                  type="button"
+                  (click)="deleteClient(row)"
+                  aria-label="Eliminar cliente"
+                  class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-destructive)/15 hover:text-(--color-destructive) transition-colors"
+                >
+                  <svg lucideIcon [lucideIcon]="Trash2" class="size-4"></svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="px-4 py-12 text-center text-sm text-(--color-muted-foreground)">
+                @if (filter()) {
+                  No hay resultados para "{{ filter() }}"
+                } @else {
+                  Aún no hay clientes registrados.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
+    <!-- pagination footer -->
+    <div class="flex items-center justify-between gap-4 px-4 py-3 border-t border-(--color-border) flex-wrap">
+      <div class="flex items-center gap-2 text-sm text-(--color-muted-foreground)">
+        <span>Filas por página</span>
+        <select
+          [value]="pageSize()"
+          (change)="changePageSize($event)"
+          class="h-8 rounded-md border border-(--color-border) bg-(--color-input) px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+        >
+          @for (n of pageSizeOptions; track n) {
+            <option [value]="n">{{ n }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm text-(--color-muted-foreground)">
+        <span>{{ pageStart() }}–{{ pageEnd() }} de {{ totalRows() }}</span>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            (click)="prevPage()"
+            [disabled]="page() === 0"
+            aria-label="Página anterior"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-(--color-border) bg-transparent hover:bg-(--color-accent) disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="ChevronLeft" class="size-4"></svg>
+          </button>
+          <button
+            type="button"
+            (click)="nextPage()"
+            [disabled]="page() >= totalPages() - 1"
+            aria-label="Página siguiente"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-(--color-border) bg-transparent hover:bg-(--color-accent) disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg lucideIcon [lucideIcon]="ChevronRight" class="size-4"></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

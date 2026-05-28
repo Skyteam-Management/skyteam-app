@@ -1,120 +1,101 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@source "./**/*.{html,ts}";
 
-:root {
-  --blanco: #ffffff;
-  --negro: #150e16;
-  --morado: #4B0C5D;
-  --azul: #1D2B72;
-  --azulOscuro: #131C49;
-  --gris: #737CA8;
-  --sombra: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+@theme {
+  --color-background: oklch(0.145 0 0);
+  --color-foreground: oklch(0.985 0 0);
+  --color-card: oklch(0.205 0 0);
+  --color-card-foreground: oklch(0.985 0 0);
+  --color-muted: oklch(0.269 0 0);
+  --color-muted-foreground: oklch(0.708 0 0);
+  --color-border: oklch(1 0 0 / 10%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: oklch(0.556 0 0);
+  /* Primary == gold (semantic alias). All CTAs across the app land here. */
+  --color-primary: oklch(0.82 0.13 78);
+  --color-primary-foreground: oklch(0.16 0 0);
+  --color-accent: oklch(0.269 0 0);
+  --color-accent-foreground: oklch(0.985 0 0);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.985 0 0);
+  --color-success: oklch(0.696 0.17 162.48);
+  --color-success-foreground: oklch(0.145 0 0);
+
+  --color-gold: oklch(0.82 0.13 78);
+  --color-gold-soft: oklch(0.82 0.13 78 / 0.18);
+  --color-gold-foreground: oklch(0.16 0 0);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces', 'Times New Roman', serif;
 }
 
-html,
-body {
-  height: 100vh;
-  color: var(--blanco);
-}
-
-body {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
-  background-color: var(--azul);
-}
-
-mat-form-field {
-  width: 100%;
-}
-
-.bg-negro {
-  background-color: var(--negro) !important;
-}
-
-.centrar {
+html, body {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-.titulo {
-  font-size: 3em;
+/* Auth layout — atmospheric textures. Kept here so the inline data URLs
+   don't bloat templates and so Tailwind doesn't have to parse them. */
+.auth-grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
 }
 
-.contenedor {
-  margin: 3em 3em 3em 3em;
+.auth-dots {
+  background-image: radial-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-.contenedor-adm {
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-
- 
-
- 
+@keyframes auth-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-
-.setting {
-  display: flex;
+.auth-rise {
+  opacity: 0;
+  animation: auth-rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
 
-button {
-  width: 100%;
-}
-/* TABLA */
-
-.mat-mdc-table {
-  background-color: var(--azulOscuro) !important;
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.mat-mdc-paginator {
-  background-color: var(--azulOscuro) !important;
-}
-td, th {
-  width: max-content;
+.toast-item {
+  animation: toast-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-table td {
-  text-transform: capitalize !important;
-}
-
-
-table {
-  width: 100%;
-}
-
-@media screen and (max-width: 800px) {
-  .mat-elevation-z8 {
-    overflow-x: auto;
-  }
-}
-
-mat-paginator {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.pointer {
+/* Tailwind v4 removed the default cursor:pointer from buttons. Restore it. */
+button:not(:disabled),
+[role="button"]:not(:disabled) {
   cursor: pointer;
 }
 
-/* SWAL */
-
-.confirm-button-class {
-  background-color: var(--morado) !important;
-  box-shadow: none !important;
-  outline: none !important;
+/* Native select dropdowns inherit the translucent input background and render
+   options unreadably. Force a solid dark surface + dark color-scheme. */
+select {
+  color-scheme: dark;
+}
+select option {
+  background-color: var(--color-card);
+  color: var(--color-foreground);
+}
+select option:disabled {
+  color: var(--color-muted-foreground);
 }
 
-.texto-blanco {
-  color: var(--blanco) !important;
+/* CDK overlay container needs to live above everything */
+.cdk-overlay-container {
+  z-index: 1000;
 }
 
-/* DIALOG */
-
-.custom-dialog-container {
-  background-color: var(--azulOscuro) !important;
-}

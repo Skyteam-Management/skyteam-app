@@ -1,105 +1,110 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
+import { LucideDynamicIcon, LucideArrowUpDown, LucideArrowUp, LucideArrowDown, LucidePencil, LucideTrash2, LucideSearch, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { LiderService } from 'src/app/dashboard/services/lider.service';
-import { Lider } from 'src/app/interfaces/lider.interface';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.component';
-import Swal from 'sweetalert2';
-import { from } from 'rxjs';
+import { Lider } from 'src/app/interfaces/lider.interface';
 import { AddEditLiderComponent } from '../add-edit-lideres/add-edit-lideres.component';
+
+type SortColumn = 'nombre' | 'apellido';
+type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-lideres-table',
   templateUrl: './lideres-table.component.html',
-  styleUrls: ['./lideres-table.component.css']
+  imports: [LucideDynamicIcon],
 })
-export class LideresTableComponent implements OnInit {
-  liderList: Lider[] = [];
-
-  displayedColumns: string[] = ['nombre', 'apellido', 'actions'];
-  dataSource: MatTableDataSource<Lider> = new MatTableDataSource();
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
+export class LideresTableComponent {
   private _liderService = inject(LiderService);
-  private _dialog = inject(MatDialog);
+  private _dialog = inject(Dialog);
+  private _toast = inject(ToastService);
 
-  ngOnInit(): void {
-    this.getLideres();
+  readonly ArrowUpDown = LucideArrowUpDown;
+  readonly ArrowUp = LucideArrowUp;
+  readonly ArrowDown = LucideArrowDown;
+  readonly Pencil = LucidePencil;
+  readonly Trash2 = LucideTrash2;
+  readonly Search = LucideSearch;
+  readonly ChevronLeft = LucideChevronLeft;
+  readonly ChevronRight = LucideChevronRight;
+
+  readonly filter = signal('');
+  readonly sortColumn = signal<SortColumn | null>('nombre');
+  readonly sortDir = signal<SortDir>('asc');
+  readonly page = signal(0);
+  readonly pageSize = signal(10);
+  readonly pageSizeOptions = [5, 10, 20, 50];
+
+  private readonly filtered = computed(() => {
+    const q = this.filter().trim().toLowerCase();
+    const all = this._liderService.lideres();
+    if (!q) return all;
+    return all.filter((l) => `${l.nombre ?? ''} ${l.apellido ?? ''}`.toLowerCase().includes(q));
+  });
+
+  private readonly sorted = computed(() => {
+    const col = this.sortColumn();
+    const dir = this.sortDir() === 'asc' ? 1 : -1;
+    if (!col) return this.filtered();
+    return [...this.filtered()].sort((a, b) => {
+      const av = (a[col] ?? '').toString().toLowerCase();
+      const bv = (b[col] ?? '').toString().toLowerCase();
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+  });
+
+  readonly totalRows = computed(() => this.sorted().length);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalRows() / this.pageSize())));
+  readonly paged = computed(() => {
+    const start = this.page() * this.pageSize();
+    return this.sorted().slice(start, start + this.pageSize());
+  });
+  readonly pageStart = computed(() => (this.totalRows() === 0 ? 0 : this.page() * this.pageSize() + 1));
+  readonly pageEnd = computed(() => Math.min(this.totalRows(), (this.page() + 1) * this.pageSize()));
+
+  onFilterChange(event: Event) {
+    this.filter.set((event.target as HTMLInputElement).value);
+    this.page.set(0);
   }
 
-  getLideres(): void {
-    this._liderService.getLideres()
-      .subscribe((res: Lider[]) => {
-        this.liderList = res;
-        this.dataSource = new MatTableDataSource(this.liderList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
-  }
-
-  openAddEditForm() {
-    const dialogRef = this._dialog.open(AddEditLiderComponent, {
-      panelClass: 'custom-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.getLideres();
-        }
-      }
-    });
-  }
-
-  openEditForm(data: any) {
-    const dialogRef = this._dialog.open(AddEditLiderComponent, {
-      data: data,
-      panelClass: 'custom-dialog-container'
-    });
-
-    console.log(data);
-    
-
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.getLideres();
-        }
-      }
-    });
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+  toggleSort(column: SortColumn) {
+    if (this.sortColumn() === column) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortColumn.set(column);
+      this.sortDir.set('asc');
     }
   }
 
-  deleteLider(row: any) {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      title: 'Eliminar',
-      name: row.nombre,
-      message: '¿Estás seguro que deseas eliminar este líder?'
-    };
-    dialogConfig.panelClass = 'custom-dialog-container';
+  changePageSize(event: Event) {
+    this.pageSize.set(+(event.target as HTMLSelectElement).value);
+    this.page.set(0);
+  }
 
-    const dialogRef = this._dialog.open(DeleteComponent, dialogConfig);
+  prevPage() {
+    this.page.update((p) => Math.max(0, p - 1));
+  }
 
-    dialogRef.afterClosed().subscribe((result) => {
+  nextPage() {
+    this.page.update((p) => Math.min(this.totalPages() - 1, p + 1));
+  }
+
+  openEditForm(row: Lider) {
+    this._dialog.open(AddEditLiderComponent, { data: row });
+  }
+
+  deleteLider(row: Lider) {
+    const ref = this._dialog.open<boolean>(DeleteComponent, {
+      data: { title: 'Eliminar', name: row.nombre, message: '¿Estás seguro que deseas eliminar este patrocinador?' },
+    });
+    ref.closed.subscribe((result) => {
       if (result) {
-        this._liderService.deleteLider(row.id).then(() => {
-          this.getLideres();
-        }).catch((err: any) => {
-          Swal.fire('Error', 'Ha ocurrido un error al eliminar el líder', 'error');
-        });
+        this._liderService.deleteLider(row.id!)
+          .then(() => this._toast.success('Patrocinador eliminado', `${row.nombre} ${row.apellido}`))
+          .catch(() => this._toast.error('No se pudo eliminar', 'Ha ocurrido un error al eliminar el patrocinador'));
       }
     });
   }

@@ -3,7 +3,16 @@ export interface Client {
   nombre: string;
   telefono: string;
   lider: string;
-  liderNombre?: string;
   paquete: string;
-  fechaInicio: string | null;
+  fechaInicio: string | Date | null;
+
+  // Read-only enrichment from clientes_view. Never sent on writes.
+  paqueteNombre?: string;
+  paqueteDias?: number | null;
+  fechaVencimiento?: string | null;
+  expirado?: boolean;
+  liderNombre?: string;
+  liderApellido?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

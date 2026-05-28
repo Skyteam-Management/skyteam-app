@@ -1,0 +1,77 @@
+<div class="w-full max-w-md rounded-lg border border-(--color-border) bg-(--color-card) shadow-2xl">
+  <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-(--color-border)">
+    <div>
+      <div class="flex items-center gap-2.5 mb-1.5">
+        <span class="block h-px w-6 bg-(--color-gold)"></span>
+        <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)">{{ data?.id ? 'Editar' : 'Nuevo' }}</span>
+      </div>
+      <h2 class="font-(family-name:--font-display) text-2xl tracking-tight leading-none" style="font-variation-settings: 'opsz' 72;">Paquete</h2>
+      @if (data?.id && (data?.created_at || data?.updated_at)) {
+        <div class="mt-2.5 text-[11px] text-(--color-muted-foreground)/80 flex flex-wrap gap-x-3 gap-y-0.5">
+          @if (data?.created_at) { <span>Creado · {{ data?.created_at | date: 'd MMM yyyy, HH:mm' }}</span> }
+          @if (data?.updated_at && data?.updated_at !== data?.created_at) { <span class="text-(--color-gold)/80">Editado · {{ data?.updated_at | date: 'd MMM yyyy, HH:mm' }}</span> }
+        </div>
+      }
+    </div>
+    <button
+      type="button"
+      (click)="close()"
+      aria-label="Cerrar"
+      class="inline-flex items-center justify-center size-8 rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors"
+    >
+      <svg lucideIcon [lucideIcon]="X" class="size-4"></svg>
+    </button>
+  </div>
+
+  <form [formGroup]="paqueteForm" (ngSubmit)="onFormSubmit()" class="px-6 py-5 flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label for="paquete-nombre" class="text-sm font-medium">Nombre</label>
+      <input
+        id="paquete-nombre"
+        type="text"
+        formControlName="nombre"
+        appUppercase
+        placeholder="EJ. 6 MESES"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm placeholder:text-(--color-muted-foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="paquete-dias" class="text-sm font-medium">Duración (días)</label>
+      <input
+        id="paquete-dias"
+        type="number"
+        min="1"
+        formControlName="dias"
+        class="h-10 rounded-md border border-(--color-border) bg-(--color-input) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-ring)"
+      />
+    </div>
+
+    <label class="inline-flex items-center gap-2 select-none">
+      <input
+        type="checkbox"
+        formControlName="activo"
+        class="size-4 rounded border-(--color-border) bg-(--color-input) accent-(--color-primary)"
+      />
+      <span class="text-sm">Activo <span class="text-(--color-muted-foreground)">— disponible al crear o editar clientes</span></span>
+    </label>
+
+    <div class="flex items-center justify-end gap-2 pt-2 border-t border-(--color-border) -mx-6 px-6 mt-2">
+      <button
+        type="button"
+        (click)="close()"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md border border-(--color-border) bg-transparent text-sm font-medium hover:bg-(--color-accent) transition-colors"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="submitting()"
+        [class.opacity-60]="submitting() || !paqueteForm.valid"
+        class="inline-flex items-center justify-center h-9 px-4 rounded-md bg-(--color-primary) text-(--color-primary-foreground) text-sm font-medium hover:opacity-90 transition-opacity disabled:cursor-wait"
+      >
+        {{ submitting() ? 'Guardando…' : (data?.id ? 'Actualizar' : 'Guardar') }}
+      </button>
+    </div>
+  </form>
+</div>

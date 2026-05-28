@@ -1,0 +1,37 @@
+<div
+  aria-live="polite"
+  aria-atomic="true"
+  class="pointer-events-none fixed z-[1100] inset-x-4 bottom-4 sm:inset-x-auto sm:bottom-6 sm:right-6 flex flex-col gap-2.5 max-w-sm sm:w-96 sm:ml-auto"
+>
+  @for (t of toasts(); track t.id) {
+    <div
+      role="status"
+      class="toast-item pointer-events-auto relative pl-4 pr-2.5 py-3 rounded-lg border border-(--color-border) bg-(--color-card)/95 backdrop-blur-md shadow-2xl flex items-start gap-3 overflow-hidden"
+    >
+      <span aria-hidden="true" class="absolute left-0 top-0 bottom-0 w-[3px]" [class]="accentClasses(t.kind)"></span>
+
+      <div class="size-8 rounded-full inline-flex items-center justify-center shrink-0 mt-0.5" [class]="iconWrapClasses(t.kind)">
+        <svg lucideIcon [lucideIcon]="iconFor(t.kind)" class="size-4"></svg>
+      </div>
+
+      <div class="flex-1 min-w-0 pt-0.5">
+        <div class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/80">
+          {{ eyebrowFor(t.kind) }}
+        </div>
+        <div class="text-sm font-semibold text-(--color-foreground) mt-1 leading-snug">{{ t.title }}</div>
+        @if (t.description) {
+          <div class="text-xs text-(--color-muted-foreground) mt-0.5 leading-relaxed">{{ t.description }}</div>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="dismiss(t.id)"
+        aria-label="Cerrar"
+        class="size-7 inline-flex items-center justify-center rounded-md text-(--color-muted-foreground) hover:bg-(--color-accent) hover:text-(--color-foreground) transition-colors shrink-0 mt-0.5"
+      >
+        <svg lucideIcon [lucideIcon]="X" class="size-3.5"></svg>
+      </button>
+    </div>
+  }
+</div>

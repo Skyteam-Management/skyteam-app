@@ -1,10 +1,96 @@
-<div class="centrar">
-  <div class="box bg-negro" routerLink="/dashboard/clientes">
-    <span>Clientes</span>
-    <i class="lni lni-users"></i>
+<div class="max-w-5xl mx-auto">
+  <div class="mb-10 lg:mb-14">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="block h-px w-12 bg-(--color-gold)"></span>
+      <span class="text-[11px] uppercase tracking-[0.32em] text-(--color-muted-foreground)">Panel</span>
+    </div>
+    <h1 class="font-(family-name:--font-display) text-5xl lg:text-6xl tracking-tight leading-[1.02]" style="font-variation-settings: 'opsz' 144, 'SOFT' 30;">
+      Bienvenido de vuelta<span class="text-(--color-gold)">.</span>
+    </h1>
+    <p class="mt-4 font-(family-name:--font-display) italic text-lg text-(--color-muted-foreground) max-w-xl" style="font-variation-settings: 'opsz' 36;">
+      Selecciona una sección para continuar.
+    </p>
   </div>
-  <div class="box bg-negro" routerLink="/dashboard/patrocinadores">
-    <span>Patrocinadores</span>
-    <i class="lni lni-sketch"></i>
+
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <a
+      routerLink="/dashboard/clientes"
+      class="group relative block rounded-lg border border-(--color-border) bg-(--color-card)/80 backdrop-blur-sm p-7 overflow-hidden transition-all hover:border-(--color-gold)/40 hover:bg-(--color-card)"
+    >
+      <span aria-hidden="true" class="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-(--color-gold)/0 group-hover:bg-(--color-gold)/8 blur-3xl transition-all duration-500"></span>
+
+      <div class="relative flex items-start justify-between mb-8">
+        <div class="inline-flex items-center justify-center size-11 rounded-md border border-(--color-border) bg-(--color-background)/60 text-(--color-foreground) group-hover:border-(--color-gold)/40 group-hover:text-(--color-gold) transition-colors">
+          <svg lucideIcon [lucideIcon]="Users" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-gold) group-hover:translate-x-1 transition-all"></svg>
+      </div>
+
+      <div class="relative">
+        <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/70">01 · Gestión</span>
+        <h2 class="mt-2 font-(family-name:--font-display) text-2xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Clientes</h2>
+        <p class="mt-2 text-sm text-(--color-muted-foreground)">Administra clientes, paquetes y fechas de pago.</p>
+      </div>
+    </a>
+
+    <a
+      routerLink="/dashboard/patrocinadores"
+      class="group relative block rounded-lg border border-(--color-border) bg-(--color-card)/80 backdrop-blur-sm p-7 overflow-hidden transition-all hover:border-(--color-gold)/40 hover:bg-(--color-card)"
+    >
+      <span aria-hidden="true" class="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-(--color-gold)/0 group-hover:bg-(--color-gold)/8 blur-3xl transition-all duration-500"></span>
+
+      <div class="relative flex items-start justify-between mb-8">
+        <div class="inline-flex items-center justify-center size-11 rounded-md border border-(--color-border) bg-(--color-background)/60 text-(--color-foreground) group-hover:border-(--color-gold)/40 group-hover:text-(--color-gold) transition-colors">
+          <svg lucideIcon [lucideIcon]="Gem" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-gold) group-hover:translate-x-1 transition-all"></svg>
+      </div>
+
+      <div class="relative">
+        <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/70">02 · Red</span>
+        <h2 class="mt-2 font-(family-name:--font-display) text-2xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Patrocinadores</h2>
+        <p class="mt-2 text-sm text-(--color-muted-foreground)">Líderes asociados a clientes.</p>
+      </div>
+    </a>
+
+    <a
+      routerLink="/dashboard/paquetes"
+      class="group relative block rounded-lg border border-(--color-border) bg-(--color-card)/80 backdrop-blur-sm p-7 overflow-hidden transition-all hover:border-(--color-gold)/40 hover:bg-(--color-card)"
+    >
+      <span aria-hidden="true" class="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-(--color-gold)/0 group-hover:bg-(--color-gold)/8 blur-3xl transition-all duration-500"></span>
+
+      <div class="relative flex items-start justify-between mb-8">
+        <div class="inline-flex items-center justify-center size-11 rounded-md border border-(--color-border) bg-(--color-background)/60 text-(--color-foreground) group-hover:border-(--color-gold)/40 group-hover:text-(--color-gold) transition-colors">
+          <svg lucideIcon [lucideIcon]="Package" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-gold) group-hover:translate-x-1 transition-all"></svg>
+      </div>
+
+      <div class="relative">
+        <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/70">03 · Catálogo</span>
+        <h2 class="mt-2 font-(family-name:--font-display) text-2xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Paquetes</h2>
+        <p class="mt-2 text-sm text-(--color-muted-foreground)">Catálogo de paquetes y duraciones.</p>
+      </div>
+    </a>
+
+    <a
+      routerLink="/dashboard/historial"
+      class="group relative block rounded-lg border border-(--color-border) bg-(--color-card)/80 backdrop-blur-sm p-7 overflow-hidden transition-all hover:border-(--color-gold)/40 hover:bg-(--color-card)"
+    >
+      <span aria-hidden="true" class="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-(--color-gold)/0 group-hover:bg-(--color-gold)/8 blur-3xl transition-all duration-500"></span>
+
+      <div class="relative flex items-start justify-between mb-8">
+        <div class="inline-flex items-center justify-center size-11 rounded-md border border-(--color-border) bg-(--color-background)/60 text-(--color-foreground) group-hover:border-(--color-gold)/40 group-hover:text-(--color-gold) transition-colors">
+          <svg lucideIcon [lucideIcon]="History" class="size-5"></svg>
+        </div>
+        <svg lucideIcon [lucideIcon]="ArrowRight" class="size-4 text-(--color-muted-foreground) group-hover:text-(--color-gold) group-hover:translate-x-1 transition-all"></svg>
+      </div>
+
+      <div class="relative">
+        <span class="text-[10px] uppercase tracking-[0.32em] text-(--color-muted-foreground)/70">04 · Auditoría</span>
+        <h2 class="mt-2 font-(family-name:--font-display) text-2xl tracking-tight" style="font-variation-settings: 'opsz' 72;">Historial</h2>
+        <p class="mt-2 text-sm text-(--color-muted-foreground)">Actividad reciente (últimos 30 días).</p>
+      </div>
+    </a>
   </div>
 </div>

@@ -1,5 +1,7 @@
 export interface Lider {
+  id: string;
   nombre: string;
   apellido: string;
-  id: string;
+  created_at?: string;
+  updated_at?: string;
 }

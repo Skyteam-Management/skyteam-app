@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { ToasterComponent } from './shared/components/toaster/toaster.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  imports: [RouterOutlet, ToasterComponent],
 })
-export class AppComponent {
-  title = 'skyteam_app';
-}
+export class AppComponent {}

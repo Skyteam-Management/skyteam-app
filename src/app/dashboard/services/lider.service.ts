@@ -1,46 +1,57 @@
-import { Lider } from './../../interfaces/lider.interface';
-import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
-import { Observable, map } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { Lider } from '../../interfaces/lider.interface';
+import { SupabaseService } from '../../services/supabase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LiderService {
+  private supabase = inject(SupabaseService);
 
-  private lideresCollection!: AngularFirestoreCollection<Lider>;
-  lideres!: Observable<Lider[]>
+  private readonly _lideres = signal<Lider[]>([]);
+  readonly lideres = this._lideres.asReadonly();
 
-  constructor(
-    private afs: AngularFirestore
-  ) {
-    this.lideresCollection = this.afs.collection<Lider>('lideres');
-    this.lideres = this.lideresCollection.snapshotChanges().pipe(
-      map(actions => actions.map(a => {
-        const data = a.payload.doc.data();
-        return { ...data, id: a.payload.doc.id } as unknown as Lider;
-      }))
-    );
+  constructor() {
+    this.refresh();
   }
 
-  getLideres() {
-    return this.lideres;
+  async getLider(id: string): Promise<Lider | undefined> {
+    const { data, error } = await this.supabase.client
+      .from('lideres')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return data ?? undefined;
   }
 
-  getLider(id: string): Observable<Lider | undefined> {
-    return this.lideresCollection.doc<Lider>(id).valueChanges();
+  async addLider(lider: Lider) {
+    const row = { ...lider, id: lider.id || crypto.randomUUID() };
+    const { error } = await this.supabase.client.from('lideres').insert(row);
+    if (error) throw error;
+    await this.refresh();
   }
 
-  addLider(lider: Lider) {
-    return this.lideresCollection.add(lider);
+  async updateLider(id: string, lider: Lider) {
+    const { id: _ignored, ...rest } = lider;
+    const { error } = await this.supabase.client.from('lideres').update(rest).eq('id', id);
+    if (error) throw error;
+    await this.refresh();
   }
 
-  updateLider(id: string, lider: Lider) {
-    return this.lideresCollection.doc(id).update(lider);
+  async deleteLider(id: string) {
+    const { error } = await this.supabase.client.from('lideres').delete().eq('id', id);
+    if (error) throw error;
+    await this.refresh();
   }
 
-  deleteLider(id: string) {
-    return this.lideresCollection.doc(id).delete();
+  private async refresh() {
+    const { data, error } = await this.supabase.client
+      .from('lideres')
+      .select('*')
+      .order('nombre', { ascending: true });
+    if (error) {
+      console.error('lideres refresh failed', error);
+      return;
+    }
+    this._lideres.set((data ?? []) as Lider[]);
   }
-
 }

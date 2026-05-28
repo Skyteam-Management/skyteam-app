@@ -45,3 +45,9 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# Migration tooling (sensitive — never commit)
+/migration/node_modules
+/migration/exports
+/migration/users.json
+service-account*.json

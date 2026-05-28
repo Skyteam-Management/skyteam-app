@@ -1,191 +1,137 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Dialog } from '@angular/cdk/dialog';
+import { LucideDynamicIcon, LucideArrowUpDown, LucideArrowUp, LucideArrowDown, LucidePencil, LucideTrash2, LucideSearch, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { ClientService } from 'src/app/dashboard/services/client.service';
-import { Client } from 'src/app/interfaces/client.interface';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { DeleteComponent } from 'src/app/dashboard/components/delete/delete.component';
-import Swal from 'sweetalert2';
-import { from } from 'rxjs';
+import { Client } from 'src/app/interfaces/client.interface';
 import { AddEditClientComponent } from '../add-edit-clientes/add-edit-clientes.component';
-import { Lider } from 'src/app/interfaces/lider.interface';
-import { LiderService } from 'src/app/dashboard/services/lider.service';
-import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
+
+type SortColumn = 'nombre' | 'telefono' | 'liderNombre' | 'fechaInicio' | 'fechaVencimiento' | 'paquete' | 'estado';
+type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-clientes-table',
   templateUrl: './clientes-table.component.html',
-  styleUrls: ['./clientes-table.component.css']
+  imports: [DatePipe, LucideDynamicIcon],
 })
-export class ClientesTableComponent implements OnInit {
-  clientList: Client[] = [];
-  lideresList: Lider[] = [];
-
-  paquetes = PAQUETES;
-
-  displayedColumns: string[] = ['nombre', 'telefono', 'lider', 'fechaInicio', 'fechaVencimiento', 'paquete', 'estado', 'actions'];
-  dataSource: MatTableDataSource<Client> = new MatTableDataSource();
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
+export class ClientesTableComponent {
   private _clientService = inject(ClientService);
-  private _liderService = inject(LiderService);
-  private _dialog = inject(MatDialog);
+  private _dialog = inject(Dialog);
+  private _toast = inject(ToastService);
 
-  ngOnInit(): void {
-    this.getClientes();
-    this.getLideres();
+  readonly ArrowUpDown = LucideArrowUpDown;
+  readonly ArrowUp = LucideArrowUp;
+  readonly ArrowDown = LucideArrowDown;
+  readonly Pencil = LucidePencil;
+  readonly Trash2 = LucideTrash2;
+  readonly Search = LucideSearch;
+  readonly ChevronLeft = LucideChevronLeft;
+  readonly ChevronRight = LucideChevronRight;
+
+  readonly filter = signal('');
+  readonly sortColumn = signal<SortColumn | null>('nombre');
+  readonly sortDir = signal<SortDir>('asc');
+  readonly page = signal(0);
+  readonly pageSize = signal(10);
+  readonly pageSizeOptions = [5, 10, 20, 50];
+
+  private readonly filtered = computed(() => {
+    const q = this.filter().trim().toLowerCase();
+    const rows = this._clientService.clients();
+    if (!q) return rows;
+    return rows.filter((row) => {
+      const blob = `${row.nombre ?? ''} ${row.telefono ?? ''} ${row.liderNombre ?? ''}`.toLowerCase();
+      return blob.includes(q);
+    });
+  });
+
+  private readonly sorted = computed(() => {
+    const col = this.sortColumn();
+    const dir = this.sortDir() === 'asc' ? 1 : -1;
+    if (!col) return this.filtered();
+    return [...this.filtered()].sort((a, b) => {
+      const av = this.sortValue(a, col);
+      const bv = this.sortValue(b, col);
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+  });
+
+  readonly totalRows = computed(() => this.sorted().length);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalRows() / this.pageSize())));
+  readonly paged = computed(() => {
+    const start = this.page() * this.pageSize();
+    return this.sorted().slice(start, start + this.pageSize());
+  });
+  readonly pageStart = computed(() => (this.totalRows() === 0 ? 0 : this.page() * this.pageSize() + 1));
+  readonly pageEnd = computed(() => Math.min(this.totalRows(), (this.page() + 1) * this.pageSize()));
+
+  onFilterChange(event: Event) {
+    this.filter.set((event.target as HTMLInputElement).value);
+    this.page.set(0);
   }
 
-  isExpired(fechaInicio: string, paqueteId: number): boolean {
-    const duracionPaquete = this.getPaqueteDuration(paqueteId);
-  
-    const fechaVencimiento = new Date(fechaInicio);
-    fechaVencimiento.setDate(fechaVencimiento.getDate() + duracionPaquete);
-  
-    const fechaActual = new Date();
-    return fechaVencimiento < fechaActual;
-  }
-  
-  getClientes(): void {
-    this._clientService.getClients()
-      .subscribe((res: Client[]) => {
-        this.clientList = res.map(client => {
-          return {
-            ...client,
-            fechaInicio: client.fechaInicio ? (typeof client.fechaInicio === 'string' ? client.fechaInicio : new Date((client.fechaInicio as any).seconds * 1000).toString()) : null,
-            liderNombre: this.getLiderName(client.lider)
-          };
-        });
-        this.dataSource = new MatTableDataSource(this.clientList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-
-        // Sobrescribir el método filterPredicate
-        this.dataSource.filterPredicate = (data: Client, filter: string) => {
-          // Convertir el objeto de datos a una cadena de texto
-          const dataStr = data.nombre + data.liderNombre + data.telefono;
-          return dataStr.toLowerCase().includes(filter);
-        };
-      });
-  }
-
-  getLideres(): void {
-    this._liderService.getLideres()
-      .subscribe((res: Lider[]) => {
-        this.lideresList = res;
-      })
-  }
-
-  getLiderName(id: string): string {
-    for (let i = 0; i < this.lideresList.length; i++) {
-      if (this.lideresList[i].id === id) {
-        return this.lideresList[i].nombre + ' ' + this.lideresList[i].apellido;
-      }
-    }
-    return 'no hay nombre';
-  }
-
-  getPaqueteName(paqueteId: number): string {
-    const paquete = this.paquetes.find(p => p.id === paqueteId);
-    return paquete ? paquete.nombre : 'Desconocido';
-  }
-
-  getPaqueteDuration(paqueteId: number): number {
-    const paquete = this.paquetes.find(p => p.id === paqueteId);
-    switch (paquete?.nombre) {
-      case '1 MES': return 31;
-      case '2 MESES': return 60;
-      case '3 MESES': return 91;
-      case '4 MESES': return 121;
-      case '5 MESES': return 151;
-      case '6 MESES': return 182;
-      case '7 MESES': return 212;
-      case '8 MESES': return 243;
-      case '9 MESES': return 273;
-      case '10 MESES': return 304;
-      case '11 MESES': return 334;
-      case '12 MESES': return 365;
-      case '15 DÍAS': return 15;
-      case '8 DÍAS': return 8;
-      default: return 0;
+  toggleSort(column: SortColumn) {
+    if (this.sortColumn() === column) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortColumn.set(column);
+      this.sortDir.set('asc');
     }
   }
 
-  calculateFechaVencimiento(fechaInicio: Date, paqueteId: number): Date {
-    const duration = this.getPaqueteDuration(paqueteId);
-    const fechaInicioDate = new Date(fechaInicio);
-    fechaInicioDate.setDate(fechaInicioDate.getDate() + duration);
-    return fechaInicioDate;
+  changePageSize(event: Event) {
+    this.pageSize.set(+(event.target as HTMLSelectElement).value);
+    this.page.set(0);
   }
- 
-  add28Days(fechaInicio: string): string {
-    const date = new Date(fechaInicio);
-    date.setDate(date.getDate() + 28);
-    return date.toISOString().split('T')[0];
+
+  prevPage() {
+    this.page.update((p) => Math.max(0, p - 1));
+  }
+
+  nextPage() {
+    this.page.update((p) => Math.min(this.totalPages() - 1, p + 1));
   }
 
   openAddEditForm() {
-    const dialogRef = this._dialog.open(AddEditClientComponent, {
-      panelClass: 'custom-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.getClientes();
-        }
-      }
-    }
-    );
+    this._dialog.open(AddEditClientComponent);
   }
 
-  openEditForm(data: any) {
-    const dialogRef = this._dialog.open(AddEditClientComponent, {
-      data: data,
-      panelClass: 'custom-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.getClientes();
-        }
-      }
-    });
+  openEditForm(row: Client) {
+    this._dialog.open(AddEditClientComponent, { data: row });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  deleteClient(row: any) {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      title: 'Eliminar',
-      name: row.nombre,
-      message: '¿Estás seguro que deseas eliminar este cliente?'
-    };
-    dialogConfig.panelClass = 'custom-dialog-container';
-
-    const dialogRef = this._dialog.open(DeleteComponent, dialogConfig);
-
-    dialogRef.afterClosed().subscribe((result) => {
+  deleteClient(row: Client) {
+    const ref = this._dialog.open<boolean>(DeleteComponent, {
+      data: { title: 'Eliminar', name: row.nombre, message: '¿Estás seguro que deseas eliminar este cliente?' },
+    });
+    ref.closed.subscribe((result) => {
       if (result) {
-        this._clientService.deleteClient(row.id).then(() => {
-          this.getClientes();
-        }).catch((err: any) => {
-          Swal.fire('Error', 'Ha ocurrido un error al eliminar el cliente', 'error');
-        });
+        this._clientService.deleteClient(row.id!)
+          .then(() => this._toast.success('Cliente eliminado', row.nombre))
+          .catch(() => this._toast.error('No se pudo eliminar', 'Ha ocurrido un error al eliminar el cliente'));
       }
     });
+  }
+
+  private sortValue(row: Client, col: SortColumn): string | number {
+    switch (col) {
+      case 'fechaInicio': return toTime(row.fechaInicio);
+      case 'fechaVencimiento': return toTime(row.fechaVencimiento);
+      case 'estado': return row.expirado ? 1 : 0;
+      case 'paquete': return (row.paqueteNombre ?? '').toLowerCase();
+      case 'liderNombre': return (row.liderNombre ?? '').toLowerCase();
+      default: return (row[col] ?? '').toString().toLowerCase();
+    }
   }
 }
 
+function toTime(v: string | Date | null | undefined): number {
+  if (!v) return 0;
+  const d = v instanceof Date ? v : new Date(v);
+  const t = d.getTime();
+  return isNaN(t) ? 0 : t;
+}

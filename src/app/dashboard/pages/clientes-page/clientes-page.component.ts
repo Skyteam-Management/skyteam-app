@@ -1,66 +1,23 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { Client } from 'src/app/interfaces/client.interface';
-import { ClientService } from '../../services/client.service';
-import { DatePipe } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, inject } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { AddEditClientComponent } from './components/add-edit-clientes/add-edit-clientes.component';
+import { ClientesTableComponent } from './components/clientes-table/clientes-table.component';
 
 @Component({
   selector: 'app-clientes-page',
   templateUrl: './clientes-page.component.html',
-  styleUrls: ['./clientes-page.component.css'],
-  providers: [DatePipe]
+  imports: [ClientesTableComponent, LucideDynamicIcon],
 })
 export class ClientesPageComponent {
+  private dialog = inject(Dialog);
 
-  displayedColumns: string[] = ['idCliente', 'nombre', 'apellido', 'telefono', 'lider', 'fechaInicio', 'estado', 'editar'];
-
-  clientData: Client[] = [];
-
-  private dialog = inject(MatDialog)
-
-  constructor(
-    private _clientService: ClientService,
-    private datePipe: DatePipe,
-    private cdr: ChangeDetectorRef  // Inject ChangeDetectorRef
-  ) {
-    this.loadClientData();
-  }
-
-  loadClientData() {
-    this._clientService.getClients().subscribe(clients => {
-      this.clientData = clients.map(client => ({
-        ...client,
-        fechaInicio: client.fechaInicio ? this.timestampToDate(client.fechaInicio) : null
-      }));
-      // Trigger change detection after updating clientData
-      this.cdr.detectChanges();
-      if (this.clientData.length > 0) {
-        console.log('Hay datos de clientes:', this.clientData);
-      } else {
-        console.log('No hay datos de clientes');
-      }
-    });
-  }
-
-  timestampToDate(timestamp: any): string | null {
-    if (timestamp && timestamp.seconds) {
-      const date = new Date(timestamp.seconds * 1000);
-      return this.datePipe.transform(date, 'MMM d, y') || null;
-    }
-    return null;
-  }
+  readonly Plus = LucidePlus;
 
   openAddForm() {
-    const dialogRef = this.dialog.open(AddEditClientComponent, {
-      panelClass: 'custom-dialog-container'
+    this.dialog.open(AddEditClientComponent, {
+      panelClass: 'custom-dialog-container',
+      backdropClass: 'cdk-overlay-dark-backdrop',
     });
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val) {
-          this.loadClientData();
-        }
-      }
-    });  
   }
 }

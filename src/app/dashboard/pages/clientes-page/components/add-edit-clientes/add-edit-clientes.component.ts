@@ -1,105 +1,85 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { LucideDynamicIcon, LucideX } from '@lucide/angular';
 import { ClientService } from 'src/app/dashboard/services/client.service';
-import { LiderService } from 'src/app/dashboard/services/lider.service';
-import { PAQUETES } from 'src/app/dashboard/shared/constants/paquetes.constants';
+import { ToastService } from 'src/app/shared/services/toast.service';
+import { PaqueteService } from 'src/app/dashboard/services/paquete.service';
 import { Client } from 'src/app/interfaces/client.interface';
-import { Lider } from 'src/app/interfaces/lider.interface';
-import Swal from 'sweetalert2';
+import { UppercaseDirective } from 'src/app/shared/directives/uppercase.directive';
+import { describeSupabaseError } from 'src/app/shared/errors/supabase-error';
+import { LiderComboboxComponent } from '../lider-combobox/lider-combobox.component';
 
 @Component({
   selector: 'app-add-edit-clientes',
   templateUrl: './add-edit-clientes.component.html',
-  styleUrls: ['./add-edit-clientes.component.css']
+  imports: [ReactiveFormsModule, DatePipe, LucideDynamicIcon, UppercaseDirective, LiderComboboxComponent],
 })
 export class AddEditClientComponent implements OnInit {
-  clientForm: FormGroup;
-  maxDate = new Date();
+  private fb = inject(FormBuilder);
+  private clientService = inject(ClientService);
+  private paqueteService = inject(PaqueteService);
+  private dialogRef = inject(DialogRef<boolean>);
+  private toast = inject(ToastService);
+  public data = inject(DIALOG_DATA);
 
-  lideres: Lider[] = []
-  
-  paquetes = PAQUETES;
+  readonly X = LucideX;
+  readonly paquetes = this.paqueteService.activos;
+  readonly today = new Date().toISOString().split('T')[0];
+  readonly submitting = signal(false);
 
-  constructor(
-    private fb: FormBuilder,
-    private clientService: ClientService,
-    private liderService: LiderService,
-    private dialogRef: MatDialogRef<AddEditClientComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
-    this.clientForm = this.fb.group({
-      nombre: ['', Validators.required],
-      telefono: ['', Validators.required],
-      lider: ['', Validators.required],
-      paquete: ['', Validators.required],
-      fechaInicio: [new Date(), Validators.required] // Initialize with current date
-    });
-
-    // Debug: Log the received data
-    console.log('Data received in dialog:', this.data);
-  }
+  clientForm: FormGroup = this.fb.group({
+    nombre: ['', Validators.required],
+    telefono: ['', Validators.required],
+    lider: ['', Validators.required],
+    paquete: ['', Validators.required],
+    fechaInicio: [this.today, Validators.required],
+  });
 
   ngOnInit(): void {
-    this.liderService.getLideres().subscribe(lideres => {
-      this.lideres = lideres;
-      
-      // Initialize form with data after lideres are loaded
-      if (this.data && this.data.id) {
-        console.log('Editing client with data:', this.data);
-        
-        // Convert the fechaInicio string to a Date object
-        let fechaInicioDate = new Date();
-        if (this.data.fechaInicio) {
-          if (typeof this.data.fechaInicio === 'string') {
-            fechaInicioDate = new Date(this.data.fechaInicio);
-          } else {
-            fechaInicioDate = this.data.fechaInicio;
-          }
+    if (this.data?.id) {
+      let fechaInicioStr = this.today;
+      if (this.data.fechaInicio) {
+        const d = typeof this.data.fechaInicio === 'string' ? new Date(this.data.fechaInicio) : this.data.fechaInicio;
+        if (d instanceof Date && !isNaN(d.getTime())) {
+          fechaInicioStr = d.toISOString().split('T')[0];
         }
-        
-        // Prepare the data for the form
-        const formData = {
-          nombre: this.data.nombre || '',
-          telefono: this.data.telefono || '',
-          lider: this.data.lider || '',
-          paquete: this.data.paquete || '',
-          fechaInicio: fechaInicioDate
-        };
-        
-        console.log('Form data to patch:', formData);
-        this.clientForm.patchValue(formData);
       }
-    });
-  }
-
-  onFormSubmit() {
-    if (this.clientForm.valid) {
-      if (this.data) {
-        const updateClient: Client = this.clientForm.value;
-        
-        this.clientService.updateClient(this.data.id, updateClient)
-          .then((val: any) => {
-            
-            Swal.fire('Éxito', `Cliente: ${updateClient.nombre} actualizado correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err.error.message, 'error');
-          });
-      } else {
-        const newClient: Client = this.clientForm.value;
-        this.clientService.addClient(newClient)
-          .then((val: any) => {
-            Swal.fire('Éxito', `Cliente: ${newClient.nombre} añadido correctamente`, 'success');
-            this.dialogRef.close(true);
-          })
-          .catch((err: any) => {
-            Swal.fire('Error', err.error.message, 'error');
-          });
-      }
+      this.clientForm.patchValue({
+        nombre: this.data.nombre || '',
+        telefono: this.data.telefono || '',
+        lider: this.data.lider || '',
+        paquete: this.data.paquete || '',
+        fechaInicio: fechaInicioStr,
+      });
     }
   }
 
+  close() {
+    this.dialogRef.close(false);
+  }
 
+  async onFormSubmit() {
+    if (this.submitting() || !this.clientForm.valid) return;
+    const formValue: Client = {
+      ...this.clientForm.value,
+      fechaInicio: this.clientForm.value.fechaInicio ? new Date(this.clientForm.value.fechaInicio) : null,
+    };
+    const editing = !!this.data?.id;
+    this.submitting.set(true);
+    try {
+      if (editing) {
+        await this.clientService.updateClient(this.data.id, formValue);
+        this.toast.success('Cliente actualizado', formValue.nombre);
+      } else {
+        await this.clientService.addClient(formValue);
+        this.toast.success('Cliente añadido', formValue.nombre);
+      }
+      this.dialogRef.close(true);
+    } catch (err: any) {
+      this.toast.error(editing ? 'No se pudo actualizar' : 'No se pudo añadir', describeSupabaseError(err));
+      this.submitting.set(false);
+    }
+  }
 }
