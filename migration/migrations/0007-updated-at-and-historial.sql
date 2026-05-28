@@ -165,7 +165,11 @@ create trigger trg_audit_clientes
 -- ============================================================
 -- 4. Update clientes_view to expose updated_at
 -- ============================================================
-create or replace view clientes_view as
+-- CREATE OR REPLACE VIEW can only append columns at the end. Since we want
+-- updated_at to sit next to created_at (not stuck after lider_apellido),
+-- drop and recreate.
+drop view if exists clientes_view;
+create view clientes_view as
 select
   c.id,
   c.nombre,
